@@ -1,0 +1,23 @@
+# Use root/example as user/password credentials
+version: '3.8'
+
+services:
+
+  mysql:
+    image: mysql:8.0
+    container_name: mysql-container
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DB}
+    ports:
+      - "3307:3306"
+    expose:
+      - 3306
+
+#docker-compose --file ./docker-compose.yaml up --detach
+# docker exec -it mysql-container bash
+# mysql -u root -p -P 3307
+
+# GRANT ALL PRIVILEGES ON *.* TO 'root'@'172.19.0.1' IDENTIFIED BY 'thinh123 WITH GRANT OPTION;
+# FLUSH PRIVILEGES;
