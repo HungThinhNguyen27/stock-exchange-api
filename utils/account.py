@@ -1,6 +1,6 @@
 import hashlib
 from model.users import User
-# import jwt
+import jwt
 from config import Config
 
 
@@ -16,6 +16,6 @@ class Account:
         hashed_input_password = self.hash_password(input_password)
         return hashed_input_password == hashed_password
 
-    # def generate_tokens(self, paylaod):
-    #     return jwt.encode(
-    #         paylaod, Config.SECRET_KEY, algorithm="HS256")
+    def generate_tokens(self, payload):
+        return jwt.encode(
+            payload, Config.SECRET_KEY, algorithm="HS256")

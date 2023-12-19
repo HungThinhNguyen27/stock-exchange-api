@@ -23,9 +23,10 @@ class User(Base):
     email = Column(String(200), unique=True, nullable=False)
     phone = Column(String(20), nullable=False)
     country = Column(String(200))
-    quantity_coin = Column(DECIMAL(17, 0), nullable=False)
-    quantity_astra = Column(DECIMAL(10, 3), nullable=False)
+    quantity_coin = Column(Integer, nullable=False)
+    quantity_astra = Column(Integer, nullable=False)
     role = Column(String(50), nullable=False)
 
     # Define the relationship in the User class
-    orders = relationship('Order', back_populates='user')
+    orders = relationship('Orders', back_populates='user')
+    book_orders = relationship('BookOrders', back_populates='user')

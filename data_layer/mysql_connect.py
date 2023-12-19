@@ -5,6 +5,7 @@ from sqlalchemy import create_engine
 from mysql.connector import connect
 from sqlalchemy.ext.declarative import declarative_base
 import sqlalchemy
+from data_layer.transaction import PurchaseTransaction
 
 MYSQL_HOST = Config.MYSQL_HOST
 MYSQL_USER = Config.MYSQL_USER
@@ -22,7 +23,7 @@ class MySqlConnect:
         #     echo=False,
         # )
         self.engine = create_engine(
-            f"mysql+mysqlconnector://root:thinh123@127.0.0.1:3307/StockApp",
+            f"mysql+mysqlconnector://root:thinh123@127.0.0.1:3307/StockData",
             echo=False,
         )
         Base.metadata.create_all(self.engine)
@@ -30,3 +31,8 @@ class MySqlConnect:
         self.session = self.Session()
 
 # export PYTHONPATH=$PYTHONPATH:/Users/macos/Downloads/WORKSPACE/stock_project/data_layer
+
+
+a = PurchaseTransaction(session)
+b = a.buy_now_trans(1, 100, 100)
+print(b)

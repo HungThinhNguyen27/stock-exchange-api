@@ -1,6 +1,6 @@
-CREATE DATABASE StockApp;
+CREATE DATABASE StockData;
 
-USE StockApp;
+USE StockData;
 
 
 CREATE TABLE users (
@@ -12,8 +12,9 @@ CREATE TABLE users (
     email NVARCHAR(255) UNIQUE NOT NULL,
     phone NVARCHAR(20) NOT NULL,
     country NVARCHAR(200),
-    quantity_coin DECIMAL(17, 0) NOT NULL,
-    quantity_astra DECIMAL(10, 3) NOT NULL
+    quantity_coin INT NOT NULL,
+    quantity_astra INT NOT NULL,
+    role NVARCHAR(50) NOT NULL
 );
 
 CREATE TABLE orders (
@@ -21,8 +22,8 @@ CREATE TABLE orders (
     user_id INT,
     order_type NVARCHAR(20),
     direction NVARCHAR(20),
-    quantity INT,
-    price DECIMAL(18, 4),
+    price_coins INT,
+    quantity_astra INT,
     status NVARCHAR(20),
     order_date DATETIME,
     FOREIGN KEY (user_id) REFERENCES users(user_id)
@@ -31,25 +32,30 @@ CREATE TABLE orders (
 CREATE TABLE stock_price (
     id INT PRIMARY KEY AUTO_INCREMENT,
     time_stamp DATETIME NOT NULL,
-    open_price DECIMAL(10, 2),
-    close_price DECIMAL(10, 2),
-    high_price DECIMAL(10, 2),
-    low_price DECIMAL(10, 2),
-    volume INT
+    open_price INT NOT NULL,
+    close_price INT NOT NULL,
+    high_price INT NOT NULL,
+    low_price INT NOT NULL,
+    volume INT NOT NULL
 );
 
 CREATE TABLE book_orders (
     book_order_id INT PRIMARY KEY AUTO_INCREMENT,
-    quantity_coin DECIMAL(17, 0) NOT NULL,
-    quantity_astra DECIMAL(10, 3) NOT NULL,
-    order_types NVARCHAR(20),
-    status NVARCHAR(20)
+    user_id INT,
+    price INT NOT NULL,
+    amount INT NOT NULL,
+    total INT NOT NULL,
+    market NVARCHAR(20) NOT NULL,
+    created_at DATETIME NOT NULL,
+    taker_type NVARCHAR(20) NOT NULL,
+    status NVARCHAR(20) NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES users(user_id)
 );
 
 CREATE TABLE market_transaction (
     transaction_id INT PRIMARY KEY AUTO_INCREMENT,
     book_order_id INT,
-    quantity_coin DECIMAL(17, 0) NOT NULL,
+    quantity_coin INT NOT NULL,
     quantity_astra DECIMAL(10, 3) NOT NULL,
     transaction_date DATETIME NOT NULL,
     FOREIGN KEY (book_order_id) REFERENCES book_orders(book_order_id)

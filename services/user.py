@@ -31,24 +31,25 @@ class UserService:
                         )
 
         add_user = self.user_data_layer.add(new_user)
-        return add_user
 
     def login(self, username, password):
         users = self.user_data_layer.get()
+        authenticated_user = None
+        access_token_payload = {}
 
         for user in users:
             if username == user.username and self.account.verify_password(password, user.hashed_password):
-                return user
+                authenticated_user = user
+                access_token_payload = {
+                    "sub": username,
+                    "role": authenticated_user.role,
+                    "exp": datetime.utcnow() + timedelta(minutes=15),
+                }
                 break
-
-        # if user_obj:
-        #     access_token_payload = {
-        #         "sub": username,
-        #         "role": user.role,
-        #         "exp": datetime.utcnow() + timedelta(minutes=3),
-        #     }
-        # acces_token = self.account.generate_tokens(access_token_payload)
-        # return acces_token
+        access_token = None
+        if authenticated_user:
+            access_token = self.account.generate_tokens(access_token_payload)
+        return access_token
 
     def deposite_coin(self, user_id_input, quantity_coin):
         user = self.user_data_layer.get_by_id(user_id_input)
@@ -59,4 +60,5 @@ class UserService:
                 user, quantity_coin_decimal)
 
     def get_account_balance(self, id):
-        return self.user_data_layer.get_by_id(id)
+        user = self.user_data_layer.get_by_id(id)
+        return user

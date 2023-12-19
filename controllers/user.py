@@ -28,9 +28,9 @@ class UserControllers:
 
         if not user_name or not password:
             return {'error': 'Missing username or password'}, 400
-
-        if self.user_services.login(user_name, password):
-            return {'message': 'Login successful'}, 200
+        token_user = self.user_services.login(user_name, password)
+        if token_user:
+            return {"access_token": token_user}, 200
         else:
             return {'error': 'Invalid username or password'}, 401
 
@@ -47,17 +47,10 @@ class UserControllers:
 
         user = self.user_services.get_account_balance(id)
         if user:
-            return {
+            user_data = {
                 'user_id': user.user_id,
                 'username': user.username,
                 'quantity_coin': user.quantity_coin,
                 'quantity_astra': user.quantity_astra
-            }, 200
-        else:
-            return {"error"}, 400
-
-    def buy_stock_now(self, request_data):
-        pass
-
-    def buy_stock_limit(self, reqsuest_data):
-        pass
+            }
+            return user_data, 200
