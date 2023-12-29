@@ -17,7 +17,7 @@ class CrawlData:
         return created_at
 
     def check_book_order_id_dup(self, input_id):
-        book_order_list = self.stock_data_layer.get_book_orders_data()
+        book_order_list = self.stock_data_layer.paging_book_orders()
         for book_order in book_order_list:
             if book_order.book_order_id == input_id:
                 return book_order

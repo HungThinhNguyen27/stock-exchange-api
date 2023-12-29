@@ -48,7 +48,6 @@ CREATE TABLE book_orders (
     market NVARCHAR(20) NOT NULL,
     created_at DATETIME NOT NULL,
     taker_type NVARCHAR(20) NOT NULL,
-    status NVARCHAR(20) NOT NULL,
     FOREIGN KEY (user_id) REFERENCES users(user_id)
 );
 

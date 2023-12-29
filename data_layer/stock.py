@@ -3,7 +3,8 @@ from model.stock import StockPrice, BookOrders, MarketTransaction, Orders
 from typing import List, Optional, Tuple
 from data_layer.mysql_connect import MySqlConnect
 from sqlalchemy.orm import aliased
-import datetime
+from sqlalchemy import asc
+from sqlalchemy import func
 
 
 class Stock(MySqlConnect):
@@ -12,8 +13,8 @@ class Stock(MySqlConnect):
         stock_data = self.session.query(StockPrice).all()
         return stock_data
 
-    def get_book_orders_data(self) -> List[BookOrders]:
-        return self.session.query(BookOrders).all()
+    def paging_book_orders(self, offset, per_page) -> List[BookOrders]:
+        return self.session.query(BookOrders).limit(per_page).offset(offset).all()
 
     def get_market_transaction_data(self) -> List[MarketTransaction]:
         return self.session.query(MarketTransaction).all()
@@ -23,48 +24,6 @@ class Stock(MySqlConnect):
             book_order_id=id).first()
         return existing_book_order
 
-    # book_orders_alias = aliased(BookOrders)  # xem lai tại sao dùng
-    def get_book_order_by_lowest_coins(self):  # xem lai tại sao dùng
-        sell_orders = self.session.query(BookOrders).\
-            filter(BookOrders.taker_type == 'sell').\
-            order_by(BookOrders.price.desc()).\
-            first()
-        return sell_orders
-
-    def add_new_buy_order(self, buyer_id, price_coins, quantity_astra):
-        completed_transaction = Orders(
-            user_id=buyer_id,
-            order_type='buy',
-            direction='completed',
-            price_coins=price_coins,
-            quantity_astra=price_coins*quantity_astra,
-            status='completed',
-            order_date=datetime.utcnow()
-        )
-        self.session.add(completed_transaction)
-
-    def add_new_sell_order(self, seller_id, price_coins, quantity_astra):
-        completed_transaction = Orders(
-            user_id=seller_id,
-            order_type='buy',
-            direction='completed',
-            price_coins=price_coins,
-            quantity_astra=price_coins*quantity_astra,
-            status='completed',
-            order_date=datetime.utcnow()
-        )
-        self.session.add(completed_transaction)
-
-    def delete_book_order_by_id(self, id):
-        order = self.get_book_orders_id(id)
-        self.session.delete(order)
-        self.commit()
-
-    def update_book_order_by_id(self, id, quantity_astra):
-        order = self.get_book_orders_id(id)
-        order.amount -= quantity_astra
-        self.commit()
-
     def add(self, data) -> None:
         self.session.add(data)
         self.commit()
@@ -72,14 +31,29 @@ class Stock(MySqlConnect):
     def commit(self) -> None:
         self.session.commit()
 
-    def rollback(self):
-        self.session.rollback()
-        raise
+    def get_book_order_asc(self):
+        return self.session.query(BookOrders).order_by(asc(BookOrders.price)).all()
 
-    def close(self):
-        self.session.close()
+    def sum_total_by_taker_type(self, taker_type, offset, limit):
+        result = (
+            self.session.query(BookOrders.price, func.sum(
+                BookOrders.total).label('total'))
+            .filter(BookOrders.taker_type == taker_type)
+            .group_by(BookOrders.price)
+            .order_by(asc(BookOrders.price))
+            .offset(offset)
+            .limit(limit)
+            .all()
+        )
 
+        return result
 
-a = Stock()
-b = a.get_book_order_by_lowest_coins()
-print(b)
+    def count_distinct_prices(self, taker_type):
+        query = (
+            self.session.query(func.count(func.distinct(BookOrders.price)))
+            .filter(BookOrders.taker_type == taker_type)
+        )
+
+        book_order_count = query.scalar()
+
+        return book_order_count

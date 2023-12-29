@@ -5,7 +5,6 @@ from sqlalchemy import create_engine
 from mysql.connector import connect
 from sqlalchemy.ext.declarative import declarative_base
 import sqlalchemy
-from data_layer.transaction import PurchaseTransaction
 
 MYSQL_HOST = Config.MYSQL_HOST
 MYSQL_USER = Config.MYSQL_USER
@@ -32,7 +31,3 @@ class MySqlConnect:
 
 # export PYTHONPATH=$PYTHONPATH:/Users/macos/Downloads/WORKSPACE/stock_project/data_layer
 
-
-a = PurchaseTransaction(session)
-b = a.buy_now_trans(1, 100, 100)
-print(b)

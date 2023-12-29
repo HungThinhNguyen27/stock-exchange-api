@@ -54,3 +54,15 @@ class UserControllers:
                 'quantity_astra': user.quantity_astra
             }
             return user_data, 200
+
+    def buy_stock_now(self, current_user, request_data):
+
+        input_coins = int(request_data.get('quantity_coin'))
+
+        transaction_process = self.user_services.buy_stock_now(current_user,
+                                                               input_coins)
+        if transaction_process is True:
+            return {"buy success": transaction_process}, 200
+        else:
+            return {"error": "not enough coins"}, 404
+# "asa_received": asa_received

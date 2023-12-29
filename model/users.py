@@ -27,6 +27,5 @@ class User(Base):
     quantity_astra = Column(Integer, nullable=False)
     role = Column(String(50), nullable=False)
 
-    # Define the relationship in the User class
     orders = relationship('Orders', back_populates='user')
     book_orders = relationship('BookOrders', back_populates='user')

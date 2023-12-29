@@ -12,8 +12,12 @@ class UserData(MySqlConnect):
     def get(self):
         return self.session.query(User).all()
 
-    def get_by_id(self, input_id):
-        user = self.session.query(User).filter_by(user_id=input_id).first()
+    def get_by_name(self, user_name):
+        user = self.session.query(User).filter_by(username=user_name).first()
+        return user
+
+    def get_by_id(self, user_id):
+        user = self.session.query(User).filter_by(user_id=user_id).first()
         return user
 
     def update_quantity_coin(self, user, quantity_coin):
@@ -36,6 +40,13 @@ class UserData(MySqlConnect):
         account = self.session.query(User).filter_by(user_id=user_id).first()
         account.quantity_coin = coin
         account.quantity_astra = astra
+
+    def get_account_balance(self, current_user):
+        user = self.get_by_name(current_user)
+        if user:
+            return user.quantity_coin
+        else:
+            return None
 
     def commit(self) -> None:
         self.session.commit()
