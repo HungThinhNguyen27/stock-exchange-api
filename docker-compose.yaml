@@ -1,4 +1,4 @@
-# Use root/example as user/password credentials
+
 version: '3.8'
 
 services:
@@ -15,9 +15,24 @@ services:
     expose:
       - 3306
 
+  web:
+    image: python:3.9
+    build: .
+    ports:
+      - "5010:5000"
+    volumes:
+      - .:/app  
+    working_dir: /app
+    command: /usr/local/bin/python3 app.py
+    environment:
+      - PIP=pip3
+
+
+
+
+
 #docker-compose --file ./docker-compose.yaml up --detach
 # docker exec -it mysql-container bash
 # mysql -u root -p -P 3307
 
-# GRANT ALL PRIVILEGES ON *.* TO 'root'@'172.19.0.1' IDENTIFIED BY 'thinh123 WITH GRANT OPTION;
-# FLUSH PRIVILEGES;
+

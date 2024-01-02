@@ -1,4 +1,5 @@
-
+import pandas as pd
+from datetime import datetime
 from data_layer.stock import Stock
 from utils.crawl_stock_data import CrawlData
 from model.stock import BookOrders, StockPrice
@@ -21,7 +22,26 @@ class StockService:
 
         """
         stock_list = self.stock_data_layers.get_stock_data()
-        return stock_list
+        df = pd.DataFrame([(stock.time_stamp, stock.open_price, stock.close_price, stock.high_price, stock.low_price, stock.volume) for stock in stock_list],
+                          columns=['time_stamp', 'open_price', 'close_price', 'high_price', 'low_price', 'volume'])
+        df['time_stamp'] = pd.to_datetime(df['time_stamp'])
+
+        # Determine official opening and closing hours
+        official_open_time = datetime.strptime('09:30', '%H:%M').time()
+        official_close_time = datetime.strptime('16:00', '%H:%M').time()
+
+        df = df[(df['time_stamp'].dt.time >= official_open_time) &
+                (df['time_stamp'].dt.time <= official_close_time)]
+
+        grouped_data = df.groupby(df['time_stamp'].dt.date).agg({
+            'open_price': 'mean',
+            'close_price': 'mean',
+            'high_price': 'mean',
+            'low_price': 'mean',
+            'volume': 'sum'
+        }).reset_index()
+
+        return grouped_data
 
     def get_book_orders_buy(self, page, limit):
         """

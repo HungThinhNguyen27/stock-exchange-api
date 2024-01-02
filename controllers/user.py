@@ -61,8 +61,25 @@ class UserControllers:
 
         transaction_process = self.user_services.buy_stock_now(current_user,
                                                                input_coins)
-        if transaction_process is True:
-            return {"buy success": transaction_process}, 200
+
+        if transaction_process:
+            return {"Status": "successful transaction",
+                    "Asa received": transaction_process[0],
+                    "Remaining coin": transaction_process[1],
+                    "You bought Asa for the price": transaction_process[2]}, 200
         else:
             return {"error": "not enough coins"}, 404
-# "asa_received": asa_received
+
+    def sell_stock_now(self, current_user, request_data):
+
+        input_asa = int(request_data.get('quantity_asa'))
+
+        transaction_process = self.user_services.sell_stock_now(current_user,
+                                                                input_asa)
+
+        if transaction_process:
+            return {"Status": "successful transaction",
+                    "Coins received": transaction_process[0],
+                    "You Sell Asa at price": transaction_process[1]}, 200
+        else:
+            return {"error": "not enough Asa"}, 404

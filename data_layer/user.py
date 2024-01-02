@@ -41,12 +41,15 @@ class UserData(MySqlConnect):
         account.quantity_coin = coin
         account.quantity_astra = astra
 
-    def get_account_balance(self, current_user):
+    def get_user_coins(self, current_user):
         user = self.get_by_name(current_user)
         if user:
             return user.quantity_coin
-        else:
-            return None
+
+    def get_user_asa(self, current_user):
+        user = self.get_by_name(current_user)
+        if user:
+            return user.quantity_astra
 
     def commit(self) -> None:
         self.session.commit()

@@ -1,5 +1,5 @@
 from data_layer.user import UserData
-from data_layer.transaction import PurchaseTransaction
+from data_layer.transaction import BuyTransaction, SellTransactions
 from model.users import User
 from utils.account import Account
 from datetime import datetime, timedelta
@@ -11,7 +11,7 @@ class UserService:
     def __init__(self) -> None:
         self.user_data_layer = UserData()
         self.account_utils = Account()
-        self.transaction_data_layer = PurchaseTransaction()
+        self.transaction_data_layer = BuyTransaction()
 
     def create_user(self, user_info):
         users = self.user_data_layer.get()
@@ -67,18 +67,18 @@ class UserService:
 
         transaction_process = self.transaction_data_layer.buy_now_trans(current_user,
                                                                         quantity_coin)
+        return transaction_process
 
-        # min_price, quantity_asa, seller_id = self.transaction_data_layer.get_lowest_price()
+    def sell_stock_now(self, current_user, quantity_asa):
 
-        # asa_received = quantity_coin // min_price
-        # remaining_coin = quantity_coin % min_price
-
+        transaction_process = self.transaction_data_layer.buy_now_trans(current_user,
+                                                                        quantity_asa)
         return transaction_process
 
     def check_balance(self, current_user, quantity_coin):
         quantity_coin_value = int(quantity_coin[0])
-        get_balance_account = self.user_data_layer.get_account_balance(current_user
-                                                                       )
+        get_balance_account = self.user_data_layer.get_user_asa(current_user
+                                                                )
 
         if get_balance_account >= quantity_coin_value:
             return get_balance_account

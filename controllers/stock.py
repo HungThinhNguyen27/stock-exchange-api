@@ -2,6 +2,7 @@ from services.stock import StockService, CrawlDataStockService
 from flask import jsonify
 from flask import request
 from collections import defaultdict
+from typing import List
 
 
 class StockControllers:
@@ -9,19 +10,18 @@ class StockControllers:
     def __init__(self) -> None:
         self.stock_service = StockService()
 
-    def stock_info(self):
-
+    def stock_info(self) -> List[dict]:
         stock_list = self.stock_service.get_stock_candles()
         stock_data = []
 
-        for stock in stock_list:
+        for _, stock in stock_list.iterrows():
             stock_dict = {
-                "time_stamp": stock.time_stamp,
-                "open_price": stock.open_price,
-                "close_price": stock.close_price,
-                "high_price": stock.high_price,
-                "low_price": stock.low_price,
-                "volume": stock.volume
+                "time_stamp": stock['time_stamp'].strftime('%Y-%m-%d'),
+                "open_price": int(stock['open_price']),
+                "close_price": int(stock['close_price']),
+                "high_price": int(stock['high_price']),
+                "low_price": int(stock['low_price']),
+                "volume": int(stock['volume'])
             }
             stock_data.append(stock_dict)
 

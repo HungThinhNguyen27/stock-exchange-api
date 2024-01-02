@@ -23,7 +23,7 @@ class StockRoutes:
         self.blueprint.add_url_rule("/market_trans", 'get_market_trans',
                                     self.get_market_trans, methods=["GET"])
 
-        self.blueprint.add_url_rule("/crawl_stock_price_data", 'crawl_stock_price_data',  # không cần route này -> route nảy tưj dộng
+        self.blueprint.add_url_rule("/crawl_stock_price_data", 'crawl_stock_price_data',
                                     self.crawl_stock_price_data, methods=["POST"])
 
     def get_stock_info(self):

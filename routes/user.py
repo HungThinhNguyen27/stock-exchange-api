@@ -23,6 +23,9 @@ class UserRoutes:
         self.blueprint.add_url_rule("/buy-now", 'buy_stock_now',
                                     self.jwt_ath.jwt_required_authentication(self.buy_stock_now), methods=["PUT"])
 
+        self.blueprint.add_url_rule("/sell-now", 'sell_stock_now',
+                                    self.jwt_ath.jwt_required_authentication(self.sell_stock_now), methods=["PUT"])
+
     def create_account(self):
 
         user_info = request.get_json()
@@ -52,6 +55,13 @@ class UserRoutes:
 
     def buy_stock_now(self):
 
+        current_user = get_jwt_identity()
+        request_data = request.get_json()
+        respone_data, status_code = self.user_controllers.buy_stock_now(current_user,
+                                                                        request_data)
+        return jsonify(respone_data), status_code
+
+    def sell_stock_now(self):
         current_user = get_jwt_identity()
         request_data = request.get_json()
         respone_data, status_code = self.user_controllers.buy_stock_now(current_user,
