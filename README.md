@@ -20,3 +20,10 @@ Ensuring safety and authenticity during transactions.
 
 4. Login & Authentication 
 Login APIs use JWT (JSON Web Token) to authenticate users.
+
+## Setup
+Clone the repository and move into it:
+
+    git clone https://github.com/HungThinhNguyen27/stock-exchange-api.git
+
+    cd stock-exchange-api
