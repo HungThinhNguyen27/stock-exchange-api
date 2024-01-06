@@ -1,6 +1,4 @@
 
-import pandas as pd
-from datetime import datetime
 from model.stock import StockPrice, BookOrders, MarketTransaction, Orders
 from typing import List, Optional, Tuple
 from data_layer.mysql_connect import MySqlConnect
