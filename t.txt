@@ -1,0 +1,31 @@
+#       MYSQL_DATABASE: ${MYSQL_DB}
+#     ports:
+#       - "3307:3306"
+#     expose:
+#       - 3306
+#     networks:
+#       - stock-exchange-apis-networks
+
+
+#   web:
+#     image: stock-api-image:latest
+#     build: .
+#     ports:
+#       - "5010:5000"
+#     volumes:
+#       - .:/app  
+#     working_dir: /app
+#     command: /usr/local/bin/python3 app.py
+#     environment:
+#       - PIP=pip3
+#     networks:
+#       - stock-exchange-apis-networks
+
+# networks:
+#   stock-exchange-apis-networks:
+#     driver: bridge
+#     external: true
+
+# #docker-compose --file ./docker-compose.yaml up --detach
+# # docker exec -it mysql-container bash
+# # mysql -u root -p -P 3307

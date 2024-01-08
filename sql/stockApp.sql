@@ -62,4 +62,4 @@ CREATE TABLE market_transaction (
 
 
 
--- mysql -u root -p -P 3307 -h 127.0.0.1 < /Users/macos/Downloads/WORKSPACE/stock_project/sql/stockApp.sql
+-- mysql -u root -p -P 3306 -h 127.0.0.1 < /Users/macos/Downloads/WORKSPACE/stock_project/sql/stockApp.sql

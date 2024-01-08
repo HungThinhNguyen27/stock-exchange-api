@@ -8,31 +8,36 @@ services:
     container_name: mysql-container
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: ${MYSQL_PASSWORD}
-      MYSQL_DATABASE: ${MYSQL_DB}
+      MYSQL_ROOT_PASSWORD: thinh123
+      MYSQL_DATABASE: StockData
     ports:
       - "3307:3306"
     expose:
       - 3306
+    networks:
+      - stock-exchange-apis-networks
 
-  web:
-    image: python:3.9
-    build: .
-    ports:
-      - "5010:5000"
-    volumes:
-      - .:/app  
-    working_dir: /app
-    command: /usr/local/bin/python3 app.py
+  stock-echange-container:
+    build: 
+        context: ../stock_project
+        dockerfile: Dockerfile
+    container_name: stock-exchange
+    restart: unless-stopped 
     environment:
-      - PIP=pip3
+      - MYSQL_PORT=3306
+      - MYSQL_HOST=mysql
+      # - MYSQL_HOST=host.docker.internal
+    ports:
+      - 5010:5000
+    networks:
+      - stock-exchange-apis-networks
 
+networks:
+  stock-exchange-apis-networks:
+    name:  stock-exchange-apis-networks
+    driver: bridge
+    external: true
 
-
-
-
-#docker-compose --file ./docker-compose.yaml up --detach
-# docker exec -it mysql-container bash
-# mysql -u root -p -P 3307
-
-
+# # #docker-compose --file ./docker-compose.yaml up --detach
+# # # docker exec -it mysql-container bash
+# # # mysql -u root -p -P 3307

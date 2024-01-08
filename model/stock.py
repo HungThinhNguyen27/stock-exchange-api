@@ -36,9 +36,9 @@ class BookOrders(Base):
 
     book_order_id = Column(Integer, primary_key=True, autoincrement=True)
     user_id = Column(Integer, ForeignKey('users.user_id'))
-    price = Column(Integer, nullable=False)
-    amount = Column(Integer, nullable=False)
-    total = Column(Integer, nullable=False)
+    price_coins = Column(Integer, nullable=False)
+    amount_asa = Column(Integer, nullable=False)
+    total_coins = Column(Integer, nullable=False)
     market = Column(String(20), nullable=False)
     created_at = Column(DateTime, nullable=False)
     taker_type = Column(String(20), nullable=False)

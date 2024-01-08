@@ -27,3 +27,7 @@ Clone the repository and move into it:
     git clone https://github.com/HungThinhNguyen27/stock-exchange-api.git
 
     cd stock-exchange-api
+
+Setup Python environment: 
+
+    pip install -r requirements.txt

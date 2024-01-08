@@ -1,3 +1,7 @@
+import requests
+from bs4 import BeautifulSoup
+import re
+from datetime import datetime, timedelta
 
 
 class ApiConstant:
@@ -21,18 +25,34 @@ class ApiConstant:
         }
         return headers
 
-    def book_order_constant(self):
-        url = "https://api.tiki.vn/sandseel/api/v2/public/markets/asaxu/trades"
-        params = {'limit': '50'}
-        headers = self.headers_constant()
-        return url, params, headers
+    params_list = [
+        {"period": 5, "time_from": 1704564195, "time_to": 1704714195},
+        {"period": 15, "time_from": 1704264195, "time_to": 1704714195},
+        {"period": 30, "time_from": 1703814195, "time_to": 1704714195},
+        {"period": 60, "time_from": 1702914195, "time_to": 1704714195},
+        {"period": 240, "time_from": 1697514195, "time_to": 1704714195},
+        {"period": 1440, "time_from": 1661514195, "time_to": 1704714195},
+        {"period": 10080, "time_from": 1402314195, "time_to": 1704714195},
+        {"period": 5, "time_from": 1704564256, "time_to": 1704714256},
+        {"period": 15, "time_from": 1704264256, "time_to": 1704714256},
+        {"period": 30, "time_from": 1703814256, "time_to": 1704714256},
+        {"period": 60, "time_from": 1702914256, "time_to": 1704714256},
+        {"period": 240, "time_from": 1697514256, "time_to": 1704714256},
+        {"period": 1440, "time_from": 1661514256, "time_to": 1704714256},
+        {"period": 10080, "time_from": 1402314256, "time_to": 1704714256},
+        {"period": 5, "time_from": 1704564479, "time_to": 1704714479},
+        {"period": 15, "time_from": 1704264479, "time_to": 1704714479},
+        {"period": 30, "time_from": 1703814479, "time_to": 1704714479},
+        {"period": 60, "time_from": 1702914479, "time_to": 1704714479},
+        {"period": 240, "time_from": 1697514479, "time_to": 1704714479},
+        {"period": 1440, "time_from": 1661514479, "time_to": 1704714479},
+        {"period": 10080, "time_from": 1402314479, "time_to": 1704714479}
+    ]
 
     def stock_price_constant(self):
         url = "https://api.tiki.vn/rally/markets/asaxu/klines"
-        params = {
-            'period': '5',
-            'time_from': '1702667569',
-            'time_to': '1702817569'
-        }
+
+        params_list = self.params_list
+
         headers = self.headers_constant()
-        return url, params, headers
+        return url, params_list, headers

@@ -3,14 +3,39 @@ from model.stock import StockPrice, BookOrders, MarketTransaction, Orders
 from typing import List, Optional, Tuple
 from data_layer.mysql_connect import MySqlConnect
 from sqlalchemy.orm import aliased
-from sqlalchemy import asc
-from sqlalchemy import func
+from sqlalchemy import asc, func, cast, Date
 
 
 class Stock(MySqlConnect):
 
     def get_stock_data(self) -> List[StockPrice]:
         stock_data = self.session.query(StockPrice).all()
+        return stock_data
+
+    def get_stock_data_by_day(self):
+        stock_data = (
+            self.session.query(
+                func.date(StockPrice.time_stamp).label('day'),
+                func.max(func.if_(
+                    (func.extract('hour', StockPrice.time_stamp) == 9) & (
+                        func.extract('minute', StockPrice.time_stamp) == 30),
+                    StockPrice.open_price,
+                    None
+                )).label('open_price'),
+                func.min(func.if_(
+                    (func.extract('hour', StockPrice.time_stamp) == 16) & (
+                        func.extract('minute', StockPrice.time_stamp) == 30),
+                    StockPrice.close_price,
+                    None
+                )).label('close_price'),
+                func.max(StockPrice.high_price).label('high_price'),
+                func.min(StockPrice.low_price).label('low_price'),
+                func.sum(StockPrice.volume).label('volume')
+            )
+            .group_by(func.date(StockPrice.time_stamp))
+            .order_by(func.date(StockPrice.time_stamp))
+            .all()
+        )
         return stock_data
 
     def paging_book_orders(self, offset, per_page) -> List[BookOrders]:
@@ -32,15 +57,15 @@ class Stock(MySqlConnect):
         self.session.commit()
 
     def get_book_order_asc(self):
-        return self.session.query(BookOrders).order_by(asc(BookOrders.price)).all()
+        return self.session.query(BookOrders).order_by(asc(BookOrders.price_coins)).all()
 
     def sum_total_by_taker_type(self, taker_type, offset, limit):
         result = (
-            self.session.query(BookOrders.price, func.sum(
-                BookOrders.total).label('total'))
+            self.session.query(BookOrders.price_coins, func.sum(
+                BookOrders.amount_asa).label('total'))
             .filter(BookOrders.taker_type == taker_type)
-            .group_by(BookOrders.price)
-            .order_by(asc(BookOrders.price))
+            .group_by(BookOrders.price_coins)
+            .order_by(asc(BookOrders.price_coins))
             .offset(offset)
             .limit(limit)
             .all()
@@ -50,40 +75,11 @@ class Stock(MySqlConnect):
 
     def count_distinct_prices(self, taker_type):
         query = (
-            self.session.query(func.count(func.distinct(BookOrders.price)))
+            self.session.query(func.count(
+                func.distinct(BookOrders.price_coins)))
             .filter(BookOrders.taker_type == taker_type)
         )
 
         book_order_count = query.scalar()
 
         return book_order_count
-
-
-a = Stock()
-b = a.get_stock_data()
-
-df = pd.DataFrame([(i.time_stamp, i.open_price, i.close_price, i.high_price, i.low_price, i.volume) for i in b],
-                  columns=['time_stamp', 'open_price', 'close_price', 'high_price', 'low_price', 'volume'])
-
-# Chuyển cột time_stamp sang kiểu datetime
-df['time_stamp'] = pd.to_datetime(df['time_stamp'])
-
-# Xác định giờ mở và đóng cửa chính thức
-official_open_time = datetime.strptime('09:30', '%H:%M').time()
-official_close_time = datetime.strptime('16:00', '%H:%M').time()
-
-# Lọc dữ liệu theo giờ mở và đóng cửa chính thức
-df = df[(df['time_stamp'].dt.time >= official_open_time) &
-        (df['time_stamp'].dt.time <= official_close_time)]
-
-# Nhóm dữ liệu theo ngày và tính toán giá trị giá mở, đóng, cao, thấp trung bình
-grouped_data = df.groupby(df['time_stamp'].dt.date).agg({
-    'open_price': 'mean',
-    'close_price': 'mean',
-    'high_price': 'mean',
-    'low_price': 'mean',
-    'volume': 'sum'
-}).reset_index()
-
-# Hiển thị kết quả
-print(grouped_data)
