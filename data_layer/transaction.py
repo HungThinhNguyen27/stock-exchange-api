@@ -119,7 +119,9 @@ class BuyTransaction(MySqlConnect):
             with self.session.begin():
                 if check_balance is True:
                     min_price, quantity_asa, seller_id_list = self.get_lowest_price()
+
                     asa_received = quantity_coin // min_price
+                    
                     remaining_coin = quantity_coin % min_price
                     total_coin_using = quantity_coin - remaining_coin
 

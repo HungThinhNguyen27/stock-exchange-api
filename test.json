@@ -1,0 +1,46 @@
+{
+    "page": 1,
+    "data": [
+        {
+            "price": 10,
+            "total_asa": -10751
+        },
+        {
+            "price": 10,
+            "total_asa": -10751
+        },
+        {
+            "price": 10,
+            "total_asa": "-10751"
+        }
+    ]
+}
+
+{
+    "data": [
+        {
+            "close_price": 47,
+            "high_price": 60,
+            "low_price": 40,
+            "open_price": 54,
+            "time_stamp": "Thu, 02 Nov 2023 00:00:00 GMT",
+            "volume": 2594353
+        },
+        {
+            "close_price": 48,
+            "high_price": 68,
+            "low_price": 41,
+            "open_price": 47,
+            "time_stamp": "Fri, 03 Nov 2023 00:00:00 GMT",
+            "volume": 3360569
+        },
+        {   
+            "close_price": 45,
+            "high_price": 48,
+            "low_price": 41,
+            "open_price": 48,
+            "time_stamp": "Sat, 04 Nov 2023 00:00:00 GMT",
+            "volume": 543015
+        }
+    ]
+}

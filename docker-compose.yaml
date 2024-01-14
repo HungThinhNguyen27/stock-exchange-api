@@ -17,7 +17,7 @@ services:
     networks:
       - stock-exchange-apis-networks
 
-  stock-echange-container:
+  stock-echange:
     build: 
         context: ../stock_project
         dockerfile: Dockerfile

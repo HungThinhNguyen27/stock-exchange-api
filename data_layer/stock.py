@@ -3,39 +3,14 @@ from model.stock import StockPrice, BookOrders, MarketTransaction, Orders
 from typing import List, Optional, Tuple
 from data_layer.mysql_connect import MySqlConnect
 from sqlalchemy.orm import aliased
-from sqlalchemy import asc, func, cast, Date
+from sqlalchemy import asc, func, desc
+from collections import defaultdict
 
 
 class Stock(MySqlConnect):
 
     def get_stock_data(self) -> List[StockPrice]:
         stock_data = self.session.query(StockPrice).all()
-        return stock_data
-
-    def get_stock_data_by_day(self):
-        stock_data = (
-            self.session.query(
-                func.date(StockPrice.time_stamp).label('day'),
-                func.max(func.if_(
-                    (func.extract('hour', StockPrice.time_stamp) == 9) & (
-                        func.extract('minute', StockPrice.time_stamp) == 30),
-                    StockPrice.open_price,
-                    None
-                )).label('open_price'),
-                func.min(func.if_(
-                    (func.extract('hour', StockPrice.time_stamp) == 16) & (
-                        func.extract('minute', StockPrice.time_stamp) == 30),
-                    StockPrice.close_price,
-                    None
-                )).label('close_price'),
-                func.max(StockPrice.high_price).label('high_price'),
-                func.min(StockPrice.low_price).label('low_price'),
-                func.sum(StockPrice.volume).label('volume')
-            )
-            .group_by(func.date(StockPrice.time_stamp))
-            .order_by(func.date(StockPrice.time_stamp))
-            .all()
-        )
         return stock_data
 
     def paging_book_orders(self, offset, per_page) -> List[BookOrders]:

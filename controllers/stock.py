@@ -10,22 +10,37 @@ class StockControllers:
     def __init__(self) -> None:
         self.stock_service = StockService()
 
-    def stock_info(self) -> List[dict]:
+    def stock_info(self) -> dict:
         stock_list = self.stock_service.get_stock_candles()
         stock_data = []
 
-        for _, stock in stock_list.iterrows():
+        for stock in stock_list:
             stock_dict = {
-                "time_stamp": stock['time_stamp'].strftime('%Y-%m-%d'),
-                "open_price": int(stock['open_price']),
-                "close_price": int(stock['close_price']),
-                "high_price": int(stock['high_price']),
-                "low_price": int(stock['low_price']),
-                "volume": int(stock['volume'])
+                "close_price": stock.close_price,
+                "high_price": stock.high_price,
+                "low_price": stock.low_price,
+                "open_price": stock.open_price,
+                "time_stamp": stock.time_stamp,
+                "volume": stock.volume
             }
             stock_data.append(stock_dict)
 
-        return stock_data, 200
+        result = {"data": stock_data}
+        return result, 200
+
+    # def stock_info(self) -> List[dict]:
+    #     stock_daily_values = self.stock_service.get_stock_candles()
+
+    #     # result = {
+    #     #     'dates': [date.day.strftime('%Y-%m-%d') for date in stock_daily_values],
+    #     #     'open_prices': [price.open_price for price in stock_daily_values],
+    #     #     'close_prices': [price.close_price for price in stock_daily_values],
+    #     #     'high_prices': [price.high_price for price in stock_daily_values],
+    #     #     'low_prices': [price.low_price for price in stock_daily_values],
+    #     #     'volumes': [volume.volume for volume in stock_daily_values]
+    #     # }
+
+    #     return stock_daily_values, 200
 
     def book_orders_buy_info(self, page, limit):
 
