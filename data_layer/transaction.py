@@ -368,11 +368,11 @@ class SellTransactions(MySqlConnect):
 # tỏng asa nhận được là 1105 coins
 # update_coins_seller(self, min_price, seller_id_list, quantity_coin):
 
-av = BuyTransaction()
-c = [25, 26, 27, 28, 29]
-d = [3, 4, 5]
-b = av.get_seller_by_min_price(20)
-user = av.get_user_by_id(b)
+# av = BuyTransaction()
+# c = [25, 26, 27, 28, 29]
+# d = [3, 4, 5]
+# b = av.get_seller_by_min_price(20)
+# user = av.get_user_by_id(b)
 
 
 # zz = a(1)

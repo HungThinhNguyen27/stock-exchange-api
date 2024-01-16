@@ -66,7 +66,7 @@ class StockControllers:
 
         book_order_data = [
             {"price": price,
-             "total_asa": total_asa}
+             "total_asa": int(total_asa)}
 
             for price, total_asa in book_order_list
         ]
@@ -97,7 +97,7 @@ class StockControllers:
 
         book_order_data = [
             {"price": price,
-             "total_asa": total_asa}
+             "total_asa": int(total_asa)}
 
             for price, total_asa in book_order_list
         ]
