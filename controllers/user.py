@@ -65,10 +65,10 @@ class UserControllers:
         if transaction_process:
             return {"Status": "successful transaction",
                     "Asa received": transaction_process[0],
-                    "Remaining coin": transaction_process[1],
-                    "You bought Asa for the price": transaction_process[2]}, 200
+                    "Remaining coin": transaction_process[2],
+                    "The number of coins you used": transaction_process[1]}, 200
         else:
-            return {"error": "not enough coins"}, 404
+            return {"error": "Not enough coins"}, 404
 
     def sell_stock_now(self, current_user, request_data):
 

@@ -1,6 +1,7 @@
 
 # from data_layer.user import UserData
 # from data_layer.stock import Stock
+from sqlalchemy import and_
 from data_layer.mysql_connect import MySqlConnect
 from sqlalchemy import asc, func,  distinct, and_, desc
 from data_layer.user import UserData
@@ -18,7 +19,7 @@ class BuyTransaction(MySqlConnect):
         self.user_data_layer = UserData()
 
     def get_lowest_price(self):
-        lowest_price = (
+        lowest_price_info = (
             self.session.query(
                 BookOrders.price_coins,
                 func.sum(BookOrders.amount_asa),
@@ -31,12 +32,16 @@ class BuyTransaction(MySqlConnect):
             .order_by(asc(BookOrders.price_coins))
             .all()
         )
-        min_price, quantity_asaa, seller_id = lowest_price[0]
-        seller_id_list = [int(user_id)
-                          for user_id in seller_id.split(',') if user_id]
+        lowest_price_data = []
+        for price, quantity_asaa, seller_id in lowest_price_info:
 
-        quantity_asa = int(quantity_asaa)
-        return min_price, quantity_asa, seller_id_list
+            min_price = int(price)
+            quantity_asa = int(quantity_asaa)
+            seller_id_list = [int(seller_id)
+                              for seller_id in seller_id.split(',') if seller_id]
+
+            lowest_price_data.append((min_price, seller_id_list, quantity_asa))
+        return lowest_price_data
 
     def get_user_by_id(self, user_id):
         user = self.session.query(User).filter_by(user_id=user_id).first()
@@ -62,22 +67,64 @@ class BuyTransaction(MySqlConnect):
         self.user_data_layer.get_user_asa(current_user) >= quantity_coin
         return True
 
-    def get_longest_seller(self, seller_id_list):
+    def get_earliest_seller(self, min_price, seller_id_list):
 
-        sellers = self.session.query(BookOrders.user_id,
-                                     func.max(BookOrders.created_at)
-                                     ).filter(
-            BookOrders.user_id.in_(seller_id_list)
-        ).group_by(
+        earliest_date_subq = self.session.query(
+            func.min(BookOrders.created_at).label('earliest_date')
+        ).filter(
+            BookOrders.price_coins == min_price
+        ).subquery()
+
+        earliest_sellers = self.session.query(
             BookOrders.user_id
-        ).having(
-            func.count(BookOrders.user_id) > 1
+        ).filter(
+            BookOrders.user_id.in_(seller_id_list),
+            BookOrders.price_coins == min_price,
+            BookOrders.created_at == earliest_date_subq.c.earliest_date
         ).order_by(
-            func.max(BookOrders.created_at).desc()
+            BookOrders.user_id
         ).all()
 
-        seller_list = [seller[0] for seller in sellers]
-        return seller_list
+        user_id_list = [user_id for (user_id,) in earliest_sellers]
+        return user_id_list
+
+    def get_seller_by_min_price(self, min_price):
+
+        # Lấy user_id của những người bán có giá thấp nhất
+        earliest_sellers = self.session.query(
+            BookOrders.user_id
+        ).filter(
+            BookOrders.price_coins == min_price
+        ).group_by(
+            BookOrders.user_id
+        ).all()
+
+        user_id_list = [user_id for (user_id,) in earliest_sellers]
+        return user_id_list
+
+    def get_book_order_earliest(self, book_order_id_list):
+
+        earliest_date_subq = self.session.query(
+            func.min(BookOrders.created_at).label('earliest_date')
+        ).filter(
+            BookOrders.book_order_id.in_(book_order_id_list)
+        ).subquery()
+
+        earliest_book_orders = self.session.query(
+            BookOrders.book_order_id,
+            BookOrders.created_at
+        ).filter(
+            and_(
+                BookOrders.book_order_id.in_(book_order_id_list),
+                BookOrders.created_at == earliest_date_subq.c.earliest_date
+            )
+        ).order_by(
+            BookOrders.book_order_id
+        ).all()
+
+        book_order_list = [book_order[0]
+                           for book_order in earliest_book_orders]
+        return book_order_list
 
     def update_account_buyer(self, current_user, asa_received, quantity_coin):
         buyer_account = self.user_data_layer.get_by_name(current_user)
@@ -85,25 +132,40 @@ class BuyTransaction(MySqlConnect):
         buyer_account.quantity_astra += asa_received
         self.session.merge(buyer_account)
 
-    def update_account_seller(self, seller_id_list, quantity_coin, quantity_asa):
+    def update_coins_earliest_seller(self, min_price, seller_id_list, quantity_coin):
 
-        longest_seller_list = self.get_longest_seller(seller_id_list)
-        coin_received = quantity_coin // len(longest_seller_list)
-        asa_received = quantity_asa // len(longest_seller_list)
+        seller_earliest_list_id = self.get_earliest_seller(min_price,
+                                                           seller_id_list)
 
-        for seller in longest_seller_list:
-            user = self.get_user_by_id(seller)
-            user.quantity_coin += coin_received
-            user.quantity_astra -= asa_received
+        coin_minus = quantity_coin // len(seller_earliest_list_id)
+
+        for seller_id in seller_earliest_list_id:
+
+            user = self.get_user_by_id(seller_id)
+            user.quantity_coin += coin_minus
+
+    def update_coins_seller_min_price(self, min_price, quantity_coin):
+
+        seller_id_list = self.get_seller_by_min_price(min_price)
+
+        coin_minus = quantity_coin // len(seller_id_list)
+
+        for seller_id in seller_id_list:
+
+            user = self.get_user_by_id(seller_id)
+            print(user)
+            user.quantity_coin += coin_minus
 
     def update_book_orders(self, min_price, asa_received_by_buyer):
+
         book_order_id_list = self.get_book_order_id_by_min_price(min_price)
-
-        for book_order_id in book_order_id_list:
+        book_order_earliest_list_id = self.get_book_order_earliest(book_order_id_list
+                                                                   )
+        asa_minus = asa_received_by_buyer // len(book_order_earliest_list_id
+                                                 )
+        for book_order_id in book_order_earliest_list_id:
             book_order = self.get_book_order_by_id(book_order_id)
-
-            book_order.amount_asa -= asa_received_by_buyer
-            book_order.total_coins -= asa_received_by_buyer * min_price
+            book_order.amount_asa -= asa_minus
 
     def delete_book_order(self, min_price):
         book_order_id_list = self.get_book_order_id_by_min_price(min_price)
@@ -112,105 +174,64 @@ class BuyTransaction(MySqlConnect):
             if book_order:
                 self.session.delete(book_order)
 
-    def buy_now_trans(self, current_user, quantity_coin):
-        check_balance = self.check_balance(current_user, quantity_coin)
+    def buy_now_trans(self, current_user, coin_user_using):
+        check_balance = self.check_balance(current_user, coin_user_using)
+        if not check_balance:
+            return None
 
         try:
             with self.session.begin():
-                if check_balance is True:
-                    min_price, quantity_asa, seller_id_list = self.get_lowest_price()
+                asa_received = 0
+                coin_spent = 0
+                index = 0
+                try:
 
-                    asa_received = quantity_coin // min_price
-                    
-                    remaining_coin = quantity_coin % min_price
-                    total_coin_using = quantity_coin - remaining_coin
+                    while coin_user_using > 0:
+                        lowest_price_data = self.get_lowest_price()
+                        min_price, seller_id_list, quantity_asa = lowest_price_data[index]
+                        index += 1
+                        print("min_price", min_price)
+                        asa_can_buy = coin_user_using // min_price
+                        # print("asa_can_buy", asa_can_buy)
+                        total_coin_market = min_price * quantity_asa
+                        print("total_coin_market", total_coin_market)
+
+                        if coin_user_using >= total_coin_market:
+                            coin_user_using = coin_user_using - total_coin_market
+                            print("coin remaing", coin_user_using)
+                            coin_spent += total_coin_market
+                            print("coin_user_using_1", coin_spent)
+                            asa_received += quantity_asa
+                            self.update_coins_seller_min_price(min_price,
+                                                               total_coin_market)
+                            # self.delete_book_order(min_price)
+
+                        else:
+                            coin_spent += coin_user_using
+                            print("coin_user_using_2", coin_user_using)
+                            asa_received += asa_can_buy
+                            self.update_coins_earliest_seller(min_price, seller_id_list,
+                                                              coin_user_using)
+                            self.update_book_orders(min_price, asa_can_buy)
+                            coin_user_using = coin_user_using - coin_user_using
+
+                        print("coin_spent_total", coin_spent)
 
                     self.update_account_buyer(current_user,
                                               asa_received,
-                                              total_coin_using)
-
-                    self.update_account_seller(seller_id_list,
-                                               total_coin_using,
-                                               asa_received)
-
-                    self.update_book_orders(min_price,
-                                            asa_received)
-
+                                              coin_spent)
                     self.session.commit()
-                    return asa_received, remaining_coin, min_price
-                else:
-                    return None
+
+                    return asa_received, coin_spent, coin_user_using
+                except:
+                    # Rollback the transaction explicitly on exception
+                    self.session.rollback()
+                    raise
 
         except Exception as e:
             print(f"Error: {e}")
             self.session.rollback()
-
-    # def buy_now_trans(self, current_user, coin_using):
-    #     check_balance = self.check_balance(current_user, coin_using)
-
-    #     try:
-    #         with self.session.begin():
-    #             if check_balance is True:
-    #                 min_price, quantity_asa, seller_id_list = self.get_lowest_price()
-    #                 asa_received = coin_using // min_price
-    #                 remaining_coin = coin_using - (min_price * quantity_asa)
-
-    #                 if remaining_coin > 0:
-
-    #                     remain_coin = coin_using - (min_price * quantity_asa)
-
-    #                     self.update_account_buyer(current_user,
-    #                                               quantity_asa,
-    #                                               min_price * quantity_asa)
-
-    #                     self.update_account_seller(seller_id_list,
-    #                                                min_price * quantity_asa,
-    #                                                quantity_asa)
-
-    #                     if asa_received >= quantity_asa:
-    #                         self.delete_book_order(min_price)
-
-    #                     # if remain_coin > 0:
-    #                         min_price_next, quantity_asa_next, seller_id_list_next = self.get_lowest_price()
-    #                         asa_received_next = remain_coin // min_price_next
-
-    #                         self.update_account_buyer(current_user,
-    #                                                   asa_received_next,
-    #                                                   remain_coin)
-
-    #                         self.update_account_seller(seller_id_list_next,
-    #                                                    remain_coin,
-    #                                                    asa_received_next)
-
-    #                         self.update_book_orders(min_price_next,
-    #                                                 asa_received_next)
-
-    #                     my_tuple = (asa_received_next,
-    #                                 min_price_next, min_price, asa_received)
-    #                     print(my_tuple)
-    #                     self.session.commit()
-    #                     return my_tuple
-
-    #                 self.update_account_buyer(current_user,
-    #                                           asa_received,
-    #                                           coin_using)
-
-    #                 self.update_account_seller(seller_id_list,
-    #                                            coin_using,
-    #                                            asa_received)
-
-    #                 self.update_book_orders(min_price,
-    #                                         asa_received)
-
-    #                 self.session.commit()
-    #                 return min_price, asa_received
-
-    #             else:
-    #                 return None
-
-    #     except Exception as e:
-    #         print(f"Error: {e}")
-    #         self.session.rollback()
+            return None
 
 
 class SellTransactions(MySqlConnect):
@@ -334,3 +355,68 @@ class SellTransactions(MySqlConnect):
         except Exception as e:
             print(f"Error: {e}")
             self.session.rollback()
+
+
+# case 1
+# coin using -> 20000  và + 20000 coin đó cho user 4 và user 3
+# xoá lệnh bán của user 4 và 3
+# còn 2000 coins sẽ mua price 19 được 105 asa + 2000coins cho user 5
+
+
+# coin 2513 và asa 495
+# tính remaing coin để maatch với lệnh mua tiếp theo
+# tỏng asa nhận được là 1105 coins
+# update_coins_seller(self, min_price, seller_id_list, quantity_coin):
+
+av = BuyTransaction()
+c = [25, 26, 27, 28, 29]
+d = [3, 4, 5]
+b = av.get_seller_by_min_price(20)
+user = av.get_user_by_id(b)
+
+
+# zz = a(1)
+
+
+# # Gọi hàm a với formatted_lowest_price_info
+# lowest_price_info = av.get_lowest_price()
+
+
+# def transform_output(output):
+#     result = []
+#     for item in output:
+#         price_coins, amount_asa, user_ids = item
+#         user_ids_list = [int(user_id) for user_id in user_ids.split(',')]
+#         result.append((price_coins, int(amount_asa), user_ids_list))
+#     return result
+
+
+# def aac(coin_user_using):
+#     index = 0
+#     asa_received = 0
+#     coin_spent = 0
+
+#     while coin_user_using > 0:
+#         lowest_price_data = av.get_lowest_price()
+#         min_price, seller_id_list, quantity_asa = lowest_price_data[index]
+#         index += 1
+#         print("min_price", min_price)
+#         asa_can_buy = coin_user_using // min_price
+#         total_coin_market = min_price * quantity_asa
+#         print("total_coin_market", total_coin_market)
+#         if coin_user_using >= total_coin_market:
+#             coin_user_using = coin_user_using - total_coin_market
+#             print("coin_user_using_1", coin_user_using)
+#             coin_spent += total_coin_market
+#             asa_received += quantity_asa
+#         else:
+#             coin_spent += coin_user_using
+#             print("coin_user_using_2", coin_user_using)
+#             coin_user_using = coin_user_using - coin_user_using
+#             asa_received += asa_can_buy
+
+#     return min_price
+
+
+# acxz = aac(10000)
+# print(acxz)

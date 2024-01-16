@@ -9,15 +9,27 @@ from collections import defaultdict
 
 class Stock(MySqlConnect):
 
-    def get_stock_data(self) -> List[StockPrice]:
-        stock_data = self.session.query(StockPrice).all()
+    def get_stock_data(self, limit: int, offset: int) -> List[StockPrice]:
+        stock_data = self.session.query(StockPrice).order_by(
+            StockPrice.time_stamp.desc()).limit(limit).offset(offset).all()
         return stock_data
+
+    def count_stock_data(self):
+        total_count = self.session.query(func.count(StockPrice.id)).scalar()
+        return total_count
 
     def paging_book_orders(self, offset, per_page) -> List[BookOrders]:
         return self.session.query(BookOrders).limit(per_page).offset(offset).all()
 
-    def get_market_transaction_data(self) -> List[MarketTransaction]:
-        return self.session.query(MarketTransaction).all()
+    def get_market_transaction(self, limit, offset) -> List[MarketTransaction]:
+        market_transactions = self.session.query(MarketTransaction).order_by(
+            MarketTransaction.transaction_date.desc()).limit(limit).offset(offset).all()
+        return market_transactions
+
+    def count_market_transactions(self):
+        total_count = self.session.query(
+            func.count(MarketTransaction.transaction_id)).scalar()
+        return total_count
 
     def get_book_orders_id(self, id) -> List[BookOrders]:
         existing_book_order = self.session.query(BookOrders).filter_by(

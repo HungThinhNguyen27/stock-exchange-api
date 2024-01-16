@@ -27,37 +27,33 @@ class StockRoutes:
                                     self.crawl_stock_price_data, methods=["POST"])
 
     def get_stock_info(self):
-        resonponse, status_code = self.stock_controllers.stock_info()
+        page = int(request.args.get("page", 1))
+        limit = int(request.args.get("limit", 10))
+        resonponse, status_code = self.stock_controllers.stock_info(
+            page, limit)
         return jsonify(resonponse), status_code
 
     def get_book_orders_buy(self):
-
-        page_param = int(request.args.get("page", 1))
+        page = int(request.args.get("page", 1))
         limit = int(request.args.get("limit", 10))
-        if page_param <= 0:
-            return jsonify({"message": "This page does not exist"}), 400
-        resonponse, metadata, status_code = self.stock_controllers.book_orders_buy_info(
-            page_param, limit)
-        if page_param > metadata["total_pages"]:
-            return jsonify({"message": "This page does not exist"}), 400
-        return jsonify(metadata, resonponse), status_code
+        resonponse, status_code = self.stock_controllers.book_orders_buy_info(
+            page, limit)
+
+        return jsonify(resonponse), status_code
 
     def get_book_orders_sell(self):
-
-        page_param = int(request.args.get("page", 1))
+        page = int(request.args.get("page", 1))
         limit = int(request.args.get("limit", 10))
+        resonponse, status_code = self.stock_controllers.book_orders_sell_info(
+            page, limit)
 
-        if page_param <= 0:
-            return jsonify({"message": "This page does not exist"}), 400
-        resonponse, metadata, status_code = self.stock_controllers.book_orders_sell_info(
-            page_param, limit)
-        if page_param <= 0 or page_param > metadata["total_pages"]:
-            return jsonify({"message": "This page does not exist"}), 400
-
-        return jsonify(metadata, resonponse), status_code
+        return jsonify(resonponse), status_code
 
     def get_market_trans(self):
-        resonponse, status_code = self.stock_controllers.market_trans_info()
+        page = int(request.args.get("page", 1))
+        limit = int(request.args.get("limit", 10))
+        resonponse, status_code = self.stock_controllers.market_trans_info(
+            page, limit)
         return jsonify(resonponse), status_code
 
     def crawl_stock_price_data(self):
