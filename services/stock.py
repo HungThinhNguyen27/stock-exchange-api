@@ -1,22 +1,24 @@
-import pandas as pd
-from datetime import datetime
-from data_layer.stock import Stock
+
+from data_layer.table.stock import StockPriceDL
+from data_layer.table.book_orders import BookOrdersDL
+from data_layer.table.market_trans import MarketTransactionDL
+
 from utils.crawl_stock_data import CrawlData
-from model.stock import BookOrders, StockPrice
-from data_layer.user import UserData
+from data_layer.table.user import UserData
 from flask import request
-from datetime import datetime
-from collections import defaultdict
 from utils.stock_utils import StockUtils
 from typing import List, Tuple
+from model.stock import BookOrders, StockPrice
 
 
 class StockService:
 
     def __init__(self) -> None:
-        self.stock_data_layers = Stock()
+        self.stock_data_layers = StockPriceDL()
         self.user_data_layers = UserData()
         self.stock_utils = StockUtils()
+        self.book_orders_dl = BookOrdersDL()
+        self.market_trans_dl = MarketTransactionDL()
 
     def get_stock_candles(self, page: int, limit: int) -> Tuple[List['StockPrice'], str, int]:
         """
@@ -30,8 +32,9 @@ class StockService:
         offset = (page - 1) * limit
         stock_list = self.stock_data_layers.get_stock_data(limit, offset)
         stock_count = self.stock_data_layers.count_stock_data()
-        next_page_url, total_pages = self.page_param(
-            stock_count, page, limit)
+        next_page_url, total_pages = self.stock_utils.page_param(stock_count,
+                                                                 page,
+                                                                 limit)
 
         return stock_list, next_page_url, total_pages
 
@@ -41,11 +44,11 @@ class StockService:
         """
         offset = (page - 1) * limit
         taker_type = 'buy'
-        book_order_list = self.stock_data_layers.sum_total_by_taker_type(taker_type,
-                                                                         offset,
-                                                                         limit)
-        book_order_count = self.stock_data_layers.count_distinct_prices(
-            taker_type)
+        book_order_list = self.book_orders_dl.sum_total_by_taker_type(taker_type,
+                                                                      offset,
+                                                                      limit)
+        book_order_count = self.book_orders_dl.count_distinct_prices(taker_type
+                                                                     )
         return book_order_list, book_order_count
 
     def get_book_orders_sell(self, page: int, limit: int) -> Tuple[List['BookOrders'], int]:
@@ -54,26 +57,22 @@ class StockService:
         """
         offset = (page - 1) * limit
         taker_type = 'sell'
-        book_order_list = self.stock_data_layers.sum_total_by_taker_type(taker_type,
-                                                                         offset,
-                                                                         limit)
-        book_order_count = self.stock_data_layers.count_distinct_prices(
+        book_order_list = self.book_orders_dl.sum_total_by_taker_type(taker_type,
+                                                                      offset,
+                                                                      limit)
+        book_order_count = self.book_orders_dl.count_distinct_prices(
             taker_type)
         return book_order_list, book_order_count
 
-    def page_param(self, price_list_count, page, limit):
-        next_page_url, total_pages = self.stock_utils.page_param(
-            price_list_count, page, limit)
-        return next_page_url, total_pages
-
     def get_market_trans(self, page, limit):
         offset = (page - 1) * limit
-        market_transactions = self.stock_data_layers.get_market_transaction(
-            limit, offset)
+        market_transactions = self.market_trans_dl.get_market_transaction(limit,
+                                                                          offset)
 
-        total_count = self.stock_data_layers.count_market_transactions()
-        next_page_url, total_pages = self.page_param(
-            total_count, page, limit)
+        total_count = self.market_trans_dl.count_market_transactions()
+        next_page_url, total_pages = self.stock_utils.page_param(total_count,
+                                                                 page,
+                                                                 limit)
 
         return market_transactions, next_page_url, total_pages
 
@@ -81,7 +80,7 @@ class StockService:
 class CrawlDataStockService:
 
     def __init__(self) -> None:
-        self.stock = Stock()
+        self.stock = StockPrice()
         self.crawl_data = CrawlData()
 
     def crawl_stock_price_data(self):

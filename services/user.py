@@ -1,5 +1,8 @@
-from data_layer.user import UserData
-from data_layer.transaction import BuyTransaction, SellTransactions
+from data_layer.table.user import UserData
+from data_layer.transaction.buy import BuyTransaction
+from data_layer.transaction.sell import SellTransaction
+
+
 from model.users import User
 from utils.account import Account
 from datetime import datetime, timedelta
@@ -11,7 +14,8 @@ class UserService:
     def __init__(self) -> None:
         self.user_data_layer = UserData()
         self.account_utils = Account()
-        self.transaction_data_layer = BuyTransaction()
+        self.buy_transaction = BuyTransaction()
+        self.sell_transaction = SellTransaction()
 
     def create_user(self, user_info):
         users = self.user_data_layer.get()
@@ -65,14 +69,14 @@ class UserService:
 
     def buy_stock_now(self, current_user, quantity_coin):
 
-        transaction_process = self.transaction_data_layer.buy_now_trans(current_user,
-                                                                        quantity_coin)
+        transaction_process = self.buy_transaction.buy_now_trans(current_user,
+                                                                 quantity_coin)
         return transaction_process
 
     def sell_stock_now(self, current_user, quantity_asa):
 
-        transaction_process = self.transaction_data_layer.buy_now_trans(current_user,
-                                                                        quantity_asa)
+        transaction_process = self.buy_transaction.buy_now_trans(current_user,
+                                                                 quantity_asa)
         return transaction_process
 
     def check_balance(self, current_user, quantity_coin):

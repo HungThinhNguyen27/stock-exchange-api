@@ -55,6 +55,8 @@ class UserControllers:
             }
             return user_data, 200
 
+    # ----------------------- fix output
+
     def buy_stock_now(self, current_user, request_data):
 
         input_coins = int(request_data.get('quantity_coin'))
@@ -65,7 +67,6 @@ class UserControllers:
         if transaction_process:
             return {"Status": "successful transaction",
                     "Asa received": transaction_process[0],
-                    "Remaining coin": transaction_process[2],
                     "The number of coins you used": transaction_process[1]}, 200
         else:
             return {"error": "Not enough coins"}, 404
@@ -76,6 +77,34 @@ class UserControllers:
 
         transaction_process = self.user_services.sell_stock_now(current_user,
                                                                 input_asa)
+
+        if transaction_process:
+            return {"Status": "successful transaction",
+                    "Coins received": transaction_process[0],
+                    "You Sell Asa at price": transaction_process[1]}, 200
+        else:
+            return {"error": "not enough Asa"}, 404
+
+    def buy_stock_limit(self, current_user, request_data):
+
+        input_coins = int(request_data.get('quantity_coin'))
+
+        transaction_process = self.user_services.buy_stock_limit(current_user,
+                                                                 input_coins)
+
+        if transaction_process:
+            return {"Status": "successful transaction",
+                    "Asa received": transaction_process[0],
+                    "The number of coins you used": transaction_process[1]}, 200
+        else:
+            return {"error": "Not enough coins"}, 404
+
+    def sell_stock_limit(self, current_user, request_data):
+
+        input_asa = int(request_data.get('quantity_asa'))
+
+        transaction_process = self.user_services.sell_stock_limit(current_user,
+                                                                  input_asa)
 
         if transaction_process:
             return {"Status": "successful transaction",

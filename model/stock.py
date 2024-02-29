@@ -43,23 +43,22 @@ class BookOrders(Base):
     created_at = Column(DateTime, nullable=False)
     taker_type = Column(String(20), nullable=False)
     user = relationship('User', back_populates='book_orders')
-    market_transaction = relationship(
-        'MarketTransaction', back_populates='book_order')
 
 
 class MarketTransaction(Base):
-
     """ Class representing Market Transaction table. """
     __tablename__ = "market_transaction"
 
     transaction_id = Column(Integer, primary_key=True, autoincrement=True)
-    book_order_id = Column(Integer, ForeignKey('book_orders.book_order_id'))
     quantity_coin = Column(Integer, nullable=False)
-    quantity_astra = Column(DECIMAL(10, 3), nullable=False)
+    price = Column(Integer, nullable=False)
+    quantity_astra = Column(Integer, nullable=False)
     transaction_date = Column(DATETIME)
+    taker_type = Column(String(20), nullable=False)
+    user_id = Column(Integer, ForeignKey('users.user_id'))
 
-    book_order = relationship(
-        'BookOrders', back_populates='market_transaction')
+    # Relationship with the User table
+    user = relationship('User', back_populates='market_transactions')
 
 
 class Orders(Base):

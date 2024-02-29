@@ -24,9 +24,8 @@ class StockControllers:
 
         metadata = {
             "page_number": page,
-            "current_url": request.url,
-            "total_pages": total_pages,
-            "next_page_url": next_page_url
+            "total_pages": total_pages
+
         }
 
         for stock in stock_list:
@@ -40,7 +39,7 @@ class StockControllers:
             }
             stock_data.append(stock_dict)
 
-        result = {"book_order_data": stock_data,
+        result = {"stock_candles": stock_data,
                   "metadata": metadata}
         return result, 200
 
@@ -90,9 +89,7 @@ class StockControllers:
 
         metadata = {
             "page_number": page,
-            "current_url": request.url,
-            "total_pages": total_pages,
-            "next_page_url": next_page_url
+            "total_pages": total_pages
         }
 
         book_order_data = [
@@ -118,10 +115,7 @@ class StockControllers:
             return {"message": "This page does not exist"}, 400
 
         metadata = {
-            "page_number": page,
-            "current_url": request.url,
-            "total_pages": total_pages,
-            "next_page_url": next_page_url
+            "page_number": page
         }
 
         for market_trans in market_trans_list:

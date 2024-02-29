@@ -29,3 +29,5 @@ class User(Base):
 
     orders = relationship('Orders', back_populates='user')
     book_orders = relationship('BookOrders', back_populates='user')
+    market_transactions = relationship(
+        'MarketTransaction', back_populates='user')

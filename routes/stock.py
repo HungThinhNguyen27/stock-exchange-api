@@ -8,7 +8,6 @@ class StockRoutes:
     def __init__(self) -> None:
         self.stock_controllers = StockControllers()
         self.crawl_stock_controllers = CrawlStockController()
-        self.jwt_ath = JwtAuthentication()
 
         self.blueprint = Blueprint('stock', __name__)
         self.blueprint.add_url_rule("/stock-candles", 'get_stock_info',

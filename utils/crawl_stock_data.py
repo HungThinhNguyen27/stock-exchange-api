@@ -1,7 +1,7 @@
 import requests
 import json
 from utils.api_constants import ApiConstant
-from data_layer.stock import Stock
+from data_layer.table.stock import StockPrice
 from datetime import datetime
 
 
@@ -9,7 +9,7 @@ class CrawlData:
 
     def __init__(self) -> None:
         self.api_constant = ApiConstant()
-        self.stock_data_layer = Stock()
+        self.stock_data_layer = StockPrice()
 
     def change_timestamp(self, time):
         created_at = datetime.utcfromtimestamp(
