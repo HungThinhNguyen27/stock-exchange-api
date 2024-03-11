@@ -73,16 +73,30 @@ class UserService:
                                                                  quantity_coin)
         return transaction_process
 
+    def buy_stock_limit(self, current_user, astra_price, coins_quantity):
+
+        transaction_process = self.buy_transaction.buy_limit_trans(current_user,
+                                                                   astra_price,
+                                                                   coins_quantity)
+        return transaction_process
+
     def sell_stock_now(self, current_user, quantity_asa):
 
-        transaction_process = self.buy_transaction.buy_now_trans(current_user,
-                                                                 quantity_asa)
+        transaction_process = self.sell_transaction.sell_now_trans(current_user,
+                                                                   quantity_asa)
+        return transaction_process
+
+    def sell_stock_limit(self, current_user, astra_price, asa_quantity):
+
+        transaction_process = self.sell_transaction.sell_limit_trans(current_user,
+                                                                     astra_price,
+                                                                     asa_quantity)
         return transaction_process
 
     def check_balance(self, current_user, quantity_coin):
         quantity_coin_value = int(quantity_coin[0])
-        get_balance_account = self.user_data_layer.get_user_asa(current_user
-                                                                )
+        get_balance_account = self.user_data_layer.get_asa(current_user
+                                                           )
 
         if get_balance_account >= quantity_coin_value:
             return get_balance_account

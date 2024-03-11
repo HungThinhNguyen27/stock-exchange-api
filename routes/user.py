@@ -35,8 +35,8 @@ class UserRoutes:
     def create_account(self):
 
         user_info = request.get_json()
-        response_data, status_code = self.user_controllers.create_user(
-            user_info)
+        response_data, status_code = self.user_controllers.create_user(user_info
+                                                                       )
         return jsonify(response_data), status_code
 
     def login(self):
@@ -48,19 +48,17 @@ class UserRoutes:
 
     def deposite_coin(self):
         request_data = request.get_json()
-        response_data, status_code = self.user_controllers.deposite_coin(
-            request_data)
+        response_data, status_code = self.user_controllers.deposite_coin(request_data
+                                                                         )
 
         return jsonify(response_data), status_code
 
     def get_account_balance(self, id):
-
-        response_data, status_code = self.user_controllers.get_account_balance(
-            id)
+        response_data, status_code = self.user_controllers.get_account_balance(id
+                                                                               )
         return jsonify(response_data), status_code
 
     def buy_stock_now(self):
-
         current_user = get_jwt_identity()
         request_data = request.get_json()
         respone_data, status_code = self.user_controllers.buy_stock_now(current_user,
@@ -70,12 +68,11 @@ class UserRoutes:
     def sell_stock_now(self):
         current_user = get_jwt_identity()
         request_data = request.get_json()
-        respone_data, status_code = self.user_controllers.buy_stock_now(current_user,
-                                                                        request_data)
+        respone_data, status_code = self.user_controllers.sell_stock_now(current_user,
+                                                                         request_data)
         return jsonify(respone_data), status_code
 
     def buy_stock_limit(self):
-
         current_user = get_jwt_identity()
         request_data = request.get_json()
         respone_data, status_code = self.user_controllers.buy_stock_limit(current_user,

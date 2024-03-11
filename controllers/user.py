@@ -61,54 +61,76 @@ class UserControllers:
 
         input_coins = int(request_data.get('quantity_coin'))
 
-        transaction_process = self.user_services.buy_stock_now(current_user,
-                                                               input_coins)
-
-        if transaction_process:
-            return {"Status": "successful transaction",
-                    "Asa received": transaction_process[0],
-                    "The number of coins you used": transaction_process[1]}, 200
+        data_trans = self.user_services.buy_stock_now(current_user,
+                                                      input_coins)
+        if data_trans:
+            return {"message": "Transaction completed successfully.",
+                    "status": "success",
+                    "data": data_trans}, 200
         else:
-            return {"error": "Not enough coins"}, 404
+            return {"message": "Insufficient funds for the transaction.",
+                    "status": "error",
+                    "data": data_trans}, 200
 
     def sell_stock_now(self, current_user, request_data):
 
         input_asa = int(request_data.get('quantity_asa'))
 
-        transaction_process = self.user_services.sell_stock_now(current_user,
-                                                                input_asa)
+        data_trans = self.user_services.sell_stock_now(current_user,
+                                                       input_asa)
 
-        if transaction_process:
-            return {"Status": "successful transaction",
-                    "Coins received": transaction_process[0],
-                    "You Sell Asa at price": transaction_process[1]}, 200
+        if data_trans:
+            return {"message": "Transaction completed successfully.",
+                    "status": "success",
+                    "data": data_trans}, 200
         else:
-            return {"error": "not enough Asa"}, 404
+            return {"message": "Insufficient funds for the transaction.",
+                    "status": "error",
+                    "data": data_trans}, 200
 
     def buy_stock_limit(self, current_user, request_data):
 
-        input_coins = int(request_data.get('quantity_coin'))
+        astra_price = int(request_data.get('astra_price'))
 
-        transaction_process = self.user_services.buy_stock_limit(current_user,
-                                                                 input_coins)
+        coins_quantity = int(request_data.get('coins_quantity'))
 
-        if transaction_process:
-            return {"Status": "successful transaction",
-                    "Asa received": transaction_process[0],
-                    "The number of coins you used": transaction_process[1]}, 200
+        data_trans = self.user_services.buy_stock_limit(current_user,
+                                                        astra_price,
+                                                        coins_quantity)
+
+        if data_trans:
+
+            data = {
+                "Astra Price": data_trans[0],
+                "The number of Coins you used": data_trans[1],
+                "Amount of Asa will receive": data_trans[2],
+            }
+            return {"status": "success",
+                    "message": "Transaction completed successfully.",
+                    "data": data}, 200
         else:
-            return {"error": "Not enough coins"}, 404
+            return {"message": "Insufficient funds for the transaction.",
+                    "status": "error"}, 200
 
     def sell_stock_limit(self, current_user, request_data):
 
-        input_asa = int(request_data.get('quantity_asa'))
+        astra_price = int(request_data.get('astra_price'))
+        asa_quantity = int(request_data.get('asa_quantity'))
 
-        transaction_process = self.user_services.sell_stock_limit(current_user,
-                                                                  input_asa)
+        data_trans = self.user_services.sell_stock_limit(current_user,
+                                                         astra_price,
+                                                         asa_quantity)
 
-        if transaction_process:
-            return {"Status": "successful transaction",
-                    "Coins received": transaction_process[0],
-                    "You Sell Asa at price": transaction_process[1]}, 200
+        if data_trans:
+            data = {
+                "Astra Price": data_trans[0],
+                "The number of Astra you used": data_trans[1],
+                "Amount of Coins will receive": data_trans[2],
+            }
+
+            return {"status": "success",
+                    "message": "Transaction completed successfully.",
+                    "data": data}, 200
         else:
-            return {"error": "not enough Asa"}, 404
+            return {"message": "Insufficient funds for the transaction.",
+                    "status": "error"}, 200

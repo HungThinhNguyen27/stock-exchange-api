@@ -9,12 +9,6 @@ class CrawlData:
 
     def __init__(self) -> None:
         self.api_constant = ApiConstant()
-        self.stock_data_layer = StockPrice()
-
-    def change_timestamp(self, time):
-        created_at = datetime.utcfromtimestamp(
-            time).strftime('%Y-%m-%d %H:%M:%S')
-        return created_at
 
     def crawl_stock_price(self):
         data_list = []

@@ -19,30 +19,52 @@ class UserData(MySqlConnect):
         user = self.session.query(User).filter_by(user_id=user_id).first()
         return user
 
-    def update_quantity_coin(self, user, quantity_coin):
-        user.quantity_coin += quantity_coin
+    def check_balance_coins(self, user_id, coins_using):
+        user = self.get_by_id(user_id)
+        if user.quantity_coin >= coins_using:
+            return True
 
-    def update_account_buyer(self, buyer_id, price_coins, quantity_astra):
+    def check_balance_asa(self, user_id, asa_using):
+        user = self.get_by_id(user_id)
+        if user.quantity_astra >= asa_using:
+            return True
 
-        buyer_account = self.get_by_id(buyer_id)
-        buyer_account.quantity_coin -= price_coins * quantity_astra
-        buyer_account.quantity_astra += quantity_astra
+    def update_plus_coin(self, id, quantity_coin):
+        account = self.get_by_id(id)
+        account.quantity_coin += quantity_coin
+        self.session.commit()
 
-    def update_account(self, seller_id, price_coins, quantity_astra):
-        seller_account = self.get_by_id(seller_id)
-        seller_account.quantity_coin += price_coins * quantity_astra
+    def update_minus_coin(self, id, quantity_coin):
+        account = self.get_by_id(id)
+        account.quantity_coin -= quantity_coin
+        self.session.commit()
 
-    def update_account_balance(self, user_id, coin, astra):
-        account = self.get_by_id(user_id)
-        account.quantity_coin = coin
-        account.quantity_astra = astra
+    def update_plus_astra(self, id, quantity_astra):
+        account = self.get_by_id(id)
+        account.quantity_astra += quantity_astra
+        self.session.commit()
 
-    def get_user_coins(self, current_user):
-        user = self.get_by_name(current_user)
-        if user:
-            return user.quantity_coin
+    def update_minus_atrsa(self, id, quantity_astra):
+        account = self.get_by_id(id)
+        account.quantity_astra += quantity_astra
+        self.session.commit()
 
-    def get_user_asa(self, current_user):
-        user = self.get_by_name(current_user)
-        if user:
-            return user.quantity_astra
+    def update_account_buyer(self, account, asa_received, quantity_coin):
+        account.quantity_coin -= quantity_coin
+        account.quantity_astra += asa_received
+        self.session.commit()
+
+    def update_account_seller(self, account, coin_received, quantity_asa):
+        account.quantity_coin += coin_received
+        account.quantity_astra -= quantity_asa
+        self.session.commit()
+
+    def update_account_buy_limit(self, current_user, quantity_coins):
+        account = self.get_by_name(current_user)
+        account.quantity_coin -= quantity_coins
+        self.session.commit()
+
+    def update_account_sell_limit(self, current_user, quantity_asa):
+        account = self.get_by_name(current_user)
+        account.quantity_astra -= quantity_asa
+        self.session.commit()

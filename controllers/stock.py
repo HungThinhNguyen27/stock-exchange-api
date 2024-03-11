@@ -107,27 +107,45 @@ class StockControllers:
         if page <= 0:
             return {"message": "This page does not exist"}, 400
 
-        market_trans_list, next_page_url, total_pages = self.stock_service.get_market_trans(
+        market_trans_list, next_page_url, total_pages = self.stock_service.get_market_transaction(
             page, limit)
-        market_trans_data = []
+        # print("market_trans_list type", type(market_trans_list))
+        market_trans_buy_data = []
+        market_trans_sell_data = []
 
         if page > total_pages:
             return {"message": "This page does not exist"}, 400
 
         metadata = {
-            "page_number": page
+            "page_number": page,
+            "total_page": total_pages,
         }
 
+        print(market_trans_list)
+
         for market_trans in market_trans_list:
-            market_trans_dict = {
-                "quantity_coin": market_trans.quantity_coin,
-                "quantity_astra": market_trans.quantity_astra,
-                "transaction_date": market_trans.transaction_date
-            }
-            market_trans_data.append(market_trans_dict)
+            if market_trans.taker_type == "bought":
+                market_trans_dict_buy = {
+                    "purchased_transaction": {
+                        "price": market_trans.price,
+                        "quantity_astra": market_trans.quantity_astra,
+                        "transaction_date": market_trans.transaction_date,
+                        "Taker_type": market_trans.taker_type,
+                    }}
+                market_trans_buy_data.append(market_trans_dict_buy)
+            else:
+                market_trans_dict_sell = {
+                    "sold_Transaction": {
+                        "price ": market_trans.price,
+                        "quantity_astra": market_trans.quantity_astra,
+                        "transaction_date": market_trans.transaction_date,
+                        "Taker_type": market_trans.taker_type,
+                    }}
+                market_trans_sell_data.append(market_trans_dict_sell)
 
         result = {"metadata": metadata,
-                  "book_order_data": market_trans_data}
+                  "book_order_bought": market_trans_buy_data,
+                  "book_order_sold": market_trans_sell_data, }
         return result, 200
 
 

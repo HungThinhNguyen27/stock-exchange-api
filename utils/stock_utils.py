@@ -41,3 +41,4 @@ class StockUtils:
                 f"{request.base_url}?page={page + 1}&limit={limit}"
             )
         return next_page_url, total_pages
+

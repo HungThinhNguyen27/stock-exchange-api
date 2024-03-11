@@ -17,8 +17,8 @@ class TestBuyTransaction(unittest.TestCase):
         mock_check_balance_coins.return_value = True
         mock_get_by_name.return_value = 1  # Mocked user ID
         # mock_get_lowest_price_sell.return_value = [(20, [2, 3], 100)]
-
-        result = self.buy_transaction.buy_now_trans(1,
+        current_user_name = "thinh123"
+        result = self.buy_transaction.buy_now_trans(current_user_name,
                                                     1000)
         print("result", result)
 

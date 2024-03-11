@@ -30,10 +30,12 @@ class MySqlConnect:
         self.engine = create_engine(
             f"mysql+mysqlconnector://root:thinh123@127.0.0.1:3307/StockData",
             echo=False,
+            isolation_level="READ COMMITTED"
         )
 
         Base.metadata.create_all(self.engine)
         self.Session = sessionmaker(bind=self.engine)
+
         self.session = self.Session()
 
 # export PYTHONPATH=$PYTHONPATH:/Users/macos/Downloads/WORKSPACE/stock_project/data_layer

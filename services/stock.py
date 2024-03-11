@@ -38,6 +38,17 @@ class StockService:
 
         return stock_list, next_page_url, total_pages
 
+    def get_market_transaction(self, page, limit):
+        offset = (page - 1) * limit
+        market_trans = self.market_trans_dl.get(limit,
+                                                offset)
+        market_trans_count = self.market_trans_dl.count()
+        next_page_url, total_pages = self.stock_utils.page_param(market_trans_count,
+                                                                 page,
+                                                                 limit)
+
+        return market_trans, next_page_url, total_pages
+
     def get_book_orders_buy(self, page: int, limit: int) -> Tuple[List['BookOrders'], int]:
         """
 
@@ -64,17 +75,10 @@ class StockService:
             taker_type)
         return book_order_list, book_order_count
 
-    def get_market_trans(self, page, limit):
-        offset = (page - 1) * limit
-        market_transactions = self.market_trans_dl.get_market_transaction(limit,
-                                                                          offset)
-
-        total_count = self.market_trans_dl.count_market_transactions()
-        next_page_url, total_pages = self.stock_utils.page_param(total_count,
-                                                                 page,
-                                                                 limit)
-
-        return market_transactions, next_page_url, total_pages
+    def page_param(self, price_list_count, page, limit):
+        next_page_url, total_pages = self.stock_utils.page_param(
+            price_list_count, page, limit)
+        return next_page_url, total_pages
 
 
 class CrawlDataStockService:

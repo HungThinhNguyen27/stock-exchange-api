@@ -19,9 +19,3 @@ class Account:
     def generate_tokens(self, payload):
         return jwt.encode(
             payload, Config.SECRET_KEY, algorithm="HS256")
-
-    def check_balance(self, user_id, quantity_coin):
-        pass
-
-    def buy_transaction(self, user_id, quantity_coin):
-        pass
