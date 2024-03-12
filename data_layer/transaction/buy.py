@@ -67,7 +67,8 @@ class BuyTransaction(MySqlConnect):
                                         asa_can_buy,
                                         taker_type="bought")
 
-        self.book_order_dl.update_by_min_price(min_price, asa_can_buy)
+        self.book_order_dl.update_minus_astra_by_min_price(min_price,
+                                                           asa_can_buy)
         coin_user_using = 0
         return coin_user_using, coin_spent, asa_received
 

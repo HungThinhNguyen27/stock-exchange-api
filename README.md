@@ -38,12 +38,13 @@ Run server on Localhost:
 
 Run server on Docker:
 
-    docker compose up
+    docker-compose --file ./docker-compose.yaml up --detach
     
 ## Usage
 
 1. The server on localhost has the URL:
     http://127.0.0.1:5001
+
 2. The server on docker has the URL:
     http://127.0.0.1:5010
 
@@ -56,6 +57,7 @@ The following API endpoints are available:
     - GET /book-orders-sell: Get a paged list of book order sell in descending order.
     - GET /market_trans_bought: Get a paged list of market transactions by most recent purchase.
     - GET /market_trans_sold: Get a paged list of market transactions by most recent purchase.
+
     - POST /account: Create account.
     - POST /login: Use account to receive jwt token.
     - PUT /buy-now": Use coins to buy asa quickly at the lowest price.

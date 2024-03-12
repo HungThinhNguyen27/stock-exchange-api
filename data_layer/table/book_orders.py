@@ -238,7 +238,7 @@ class BookOrdersDL(MySqlConnect):
                 self.session.delete(book_order)
         self.session.commit()
 
-    def update_by_min_price(self, min_price, asa_spent):
+    def update_minus_astra_by_min_price(self, min_price, asa_spent):
 
         book_order_id_list = self.get_book_order_id_by_min_price(min_price
                                                                  )

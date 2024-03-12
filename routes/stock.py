@@ -48,7 +48,6 @@ class StockRoutes:
         limit = int(request.args.get("limit", 10))
         resonponse, status_code = self.stock_controllers.book_orders_sell_info(
             page, limit)
-
         return jsonify(resonponse), status_code
 
     def get_market_trans_bought(self):
