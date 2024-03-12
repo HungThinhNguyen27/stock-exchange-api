@@ -8,14 +8,14 @@ class CrawlData:
     def api_constant(self):
 
         period = 1440
-        # start_date = datetime(2023, 11, 1, tzinfo=timezone.utc)
-        # start_timestamp = int(start_date.timestamp())
+        start_date = datetime(2023, 11, 1, tzinfo=timezone.utc)
+        start_timestamp = int(start_date.timestamp())
         url = "https://api.tiki.vn/rally/markets/asaxu/klines"
         current_date = datetime.utcnow()
         current_timestamp = int(current_date.timestamp())
 
-        start_date = current_date - timedelta(days=1)
-        start_timestamp = int(start_date.timestamp())
+        # start_date = current_date - timedelta(days=1)
+        # start_timestamp = int(start_date.timestamp())
 
         headers = {
             'Accept': 'application/json, text/plain, */*',

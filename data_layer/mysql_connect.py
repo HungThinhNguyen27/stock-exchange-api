@@ -22,16 +22,16 @@ class MySqlConnect:
         #     echo=False,
         # )
 
-        self.engine = create_engine(
-            f"mysql+mysqlconnector://root:thinh123@mysql:3306/StockData",
-            echo=False,
-        )
-
         # self.engine = create_engine(
-        #     f"mysql+mysqlconnector://root:thinh123@127.0.0.1:3307/StockData",
+        #     f"mysql+mysqlconnector://root:thinh123@mysql:3306/StockData",
         #     echo=False,
-        #     isolation_level="READ COMMITTED"
         # )
+
+        self.engine = create_engine(
+            f"mysql+mysqlconnector://root:thinh123@127.0.0.1:3307/StockData",
+            echo=False,
+            isolation_level="READ COMMITTED"
+        )
 
         Base.metadata.create_all(self.engine)
         self.Session = sessionmaker(bind=self.engine)

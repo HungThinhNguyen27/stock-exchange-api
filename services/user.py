@@ -37,7 +37,7 @@ class UserService:
                         role=user_info['role']
                         )
 
-        add_user = self.user_data_layer.add(new_user)
+        self.user_data_layer.add(new_user)
 
     def login(self, username, password):
         users = self.user_data_layer.get()

@@ -58,9 +58,7 @@ class StockControllers:
 
         metadata = {
             "page_number": page,
-            "current_url": request.url,
             "total_pages": total_pages,
-            "next_page_url": next_page_url
         }
 
         book_order_data = [
@@ -75,8 +73,8 @@ class StockControllers:
 
     def book_orders_sell_info(self, page, limit):
 
-        # if page <= 0:
-        #     return {"message": "This page does not exist"}, 400
+        if page <= 0:
+            return {"message": "This page does not exist"}, 400
 
         book_order_list, book_order_count = self.stock_service.get_book_orders_sell(
             page, limit)
@@ -84,8 +82,8 @@ class StockControllers:
         next_page_url, total_pages = self.stock_service.page_param(book_order_count,
                                                                    page,
                                                                    limit)
-        # if page > total_pages:
-        #     return {"message": "This page does not exist"}, 400
+        if page > total_pages:
+            return {"message": "This page does not exist"}, 400
 
         metadata = {
             "page_number": page,
@@ -102,7 +100,40 @@ class StockControllers:
                   "book_order_data": book_order_data}
         return result, 200
 
-    def market_trans_info(self, page, limit):
+    def market_trans_sold_info(self, page, limit):
+
+        if page <= 0:
+            return {"message": "This page does not exist"}, 400
+
+        market_trans_list, next_page_url, total_pages = self.stock_service.get_market_transaction(
+            page, limit)
+        market_trans_buy_data = []
+        market_trans_sell_data = []
+
+        if page > total_pages:
+            return {"message": "This page does not exist"}, 400
+
+        metadata = {
+            "page_number": page,
+            "total_page": total_pages,
+        }
+
+        for market_trans in market_trans_list:
+            if market_trans.taker_type == "sold":
+                market_trans_dict_sell = {
+                    "sold_Transaction": {
+                        "price ": market_trans.price,
+                        "quantity_astra": market_trans.quantity_astra,
+                        "transaction_date": market_trans.transaction_date,
+                        "Taker_type": market_trans.taker_type,
+                    }}
+                market_trans_sell_data.append(market_trans_dict_sell)
+
+        result = {"metadata": metadata,
+                  "book_order_sold": market_trans_sell_data}
+        return result, 200
+
+    def market_trans_bought_info(self, page, limit):
 
         if page <= 0:
             return {"message": "This page does not exist"}, 400
@@ -121,8 +152,6 @@ class StockControllers:
             "total_page": total_pages,
         }
 
-        print(market_trans_list)
-
         for market_trans in market_trans_list:
             if market_trans.taker_type == "bought":
                 market_trans_dict_buy = {
@@ -133,19 +162,9 @@ class StockControllers:
                         "Taker_type": market_trans.taker_type,
                     }}
                 market_trans_buy_data.append(market_trans_dict_buy)
-            else:
-                market_trans_dict_sell = {
-                    "sold_Transaction": {
-                        "price ": market_trans.price,
-                        "quantity_astra": market_trans.quantity_astra,
-                        "transaction_date": market_trans.transaction_date,
-                        "Taker_type": market_trans.taker_type,
-                    }}
-                market_trans_sell_data.append(market_trans_dict_sell)
 
         result = {"metadata": metadata,
-                  "book_order_bought": market_trans_buy_data,
-                  "book_order_sold": market_trans_sell_data, }
+                  "book_order_bought": market_trans_buy_data}
         return result, 200
 
 

@@ -7,6 +7,7 @@ class UserData(MySqlConnect):
 
     def add(self, user: str) -> None:
         self.session.add(user)
+        self.session.commit()
 
     def get(self):
         return self.session.query(User).all()

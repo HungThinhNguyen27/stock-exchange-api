@@ -17,7 +17,7 @@ app.register_blueprint(stock_routes.blueprint)
 app.register_blueprint(user_routes.blueprint)
 
 if __name__ == '__main__':
-    everyday_thread = threading.Thread(target=crawl_stock.run_everyday())
-    everyday_thread.start()
+    # everyday_thread = threading.Thread(target=crawl_stock.run_everyday())
+    # everyday_thread.start()
     app.run(host='0.0.0.0', port=5001, debug=True, use_reloader=True)
     # app.run(host='0.0.0.0', debug=True)  # docker
