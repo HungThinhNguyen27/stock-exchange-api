@@ -2,13 +2,18 @@
 from data_layer.table.stock import StockPriceDL
 from data_layer.table.book_orders import BookOrdersDL
 from data_layer.table.market_trans import MarketTransactionDL
-
 from utils.crawl_stock_data import CrawlData
 from data_layer.table.user import UserData
 from flask import request
 from utils.stock_utils import StockUtils
 from typing import List, Tuple
 from model.stock import BookOrders, StockPrice
+import schedule
+import time
+import schedule
+import json
+import os
+import datetime
 
 
 class StockService:
@@ -84,22 +89,28 @@ class StockService:
 class CrawlDataStockService:
 
     def __init__(self) -> None:
-        self.stock = StockPrice()
+        self.stock_data_layers = StockPriceDL()
         self.crawl_data = CrawlData()
 
     def crawl_stock_price_data(self):
-        stock_price_data_list = self.crawl_data.crawl_stock_price()
-
-        for stock_price_data in stock_price_data_list:
-            created_at = self.crawl_data.change_timestamp(
-                stock_price_data.get('time_stamp'))
-
+        data_dict = self.crawl_data.crawl_stock_price()
+        for record in data_dict:
             stock_entity = StockPrice(
-                time_stamp=created_at,
-                open_price=stock_price_data.get('open_price'),
-                close_price=stock_price_data.get('close_price'),
-                high_price=stock_price_data.get('high_price'),
-                low_price=stock_price_data.get('low_price'),
-                volume=stock_price_data.get('volume')
+                time_stamp=record.get('time_stamp'),
+                open_price=record.get('open_price'),
+                close_price=record.get('close_price'),
+                high_price=record.get('high_price'),
+                low_price=record.get('low_price'),
+                volume=record.get('volume')
             )
-            self.stock.add(stock_entity)
+            self.stock_data_layers.add(stock_entity)
+
+    def run_everyday(self) -> None:
+        schedule.every().day.at("16:09").do(self.crawl_stock_price_data)
+        allow_crawling = True
+        start_time = time.time()
+        while allow_crawling:
+            schedule.run_pending()
+            elapsed_time = time.time() - start_time
+            if elapsed_time == 30:
+                break

@@ -7,9 +7,9 @@ from sqlalchemy import func
 
 class StockPriceDL(MySqlConnect):
 
-    def add(self, data) -> None:
-        self.session.add(data)
-        self.commit()
+    def add(self, record) -> None:
+        self.session.add(record)
+        self.session.commit()
 
     def commit(self) -> None:
         self.session.commit()

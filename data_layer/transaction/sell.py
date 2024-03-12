@@ -117,7 +117,6 @@ class SellTransaction(MySqlConnect):
 
         check_balance = self.user_dl.check_balance_asa(user.user_id,
                                                        asa_user_using)
-
         if check_balance is None:
             return None
         try:
@@ -150,7 +149,6 @@ class SellTransaction(MySqlConnect):
 
         check_balance = self.user_dl.check_balance_asa(user.user_id,
                                                        asa_quantity)
-
         if check_balance is None:
             return None
         try:
@@ -172,5 +170,3 @@ class SellTransaction(MySqlConnect):
             traceback.print_exc()
             self.session.rollback()
             return None
-        # finally:
-        #     self.session.close()
