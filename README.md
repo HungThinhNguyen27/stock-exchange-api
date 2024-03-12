@@ -31,3 +31,12 @@ Clone the repository and move into it:
 Setup Python environment: 
 
     pip install -r requirements.txt
+
+Run server on Localhost:
+
+    python3 app.py
+
+Run server on Docker:
+
+    docker compose up
+    
