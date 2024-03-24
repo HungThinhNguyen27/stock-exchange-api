@@ -7,7 +7,8 @@ class CrawlData:
 
     def api_constant(self):
 
-        period = 1440
+        # period = 10080
+        period = 10_080
         start_date = datetime(2023, 11, 1, tzinfo=timezone.utc)
         start_timestamp = int(start_date.timestamp())
         url = "https://api.tiki.vn/rally/markets/asaxu/klines"
@@ -44,7 +45,7 @@ class CrawlData:
     def convert_timestamp(self, data_list):
         for record in data_list:
             normal_time = datetime.utcfromtimestamp(
-                record['time_stamp']).strftime('%Y-%m-%d')
+                record['time_stamp']).strftime('%Y-%m-%d %H:%M')
             record['time_stamp'] = normal_time
         return data_list
 
@@ -65,7 +66,7 @@ class CrawlData:
                 'close_price': record[4],
                 'high_price': record[2],
                 'low_price': record[3],
-                'volume': record[5]
+                'volume': record[5],
             }
             for record in data_list
         ]
@@ -74,5 +75,4 @@ class CrawlData:
 
 # a = CrawlData()
 # b = a.crawl_stock_price()
-# for i in b:
-#     print(i)
+# print(b)

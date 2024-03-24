@@ -34,28 +34,13 @@ class UserControllers:
         else:
             return {'error': 'Invalid username or password'}, 401
 
-    def deposite_coin(self, request_data):
-
-        user_id = request_data.get('user_id')
-        quantity_coin = request_data.get('quantity_coin')
-
-        self.user_services.deposite_coin(user_id, quantity_coin)
-
-        return {'Your account has been added': quantity_coin}, 200
-
-    def get_account_balance(self, id):
-
-        user = self.user_services.get_account_balance(id)
-        if user:
-            user_data = {
-                'user_id': user.user_id,
-                'username': user.username,
-                'quantity_coin': user.quantity_coin,
-                'quantity_astra': user.quantity_astra
-            }
-            return user_data, 200
-
-    # ----------------------- fix output
+    def get_balance_account(self, current_user):
+        account = self.user_services.get_account(current_user)
+        return {
+            "account": account.username,
+            "quantity_coin": account.quantity_coin,
+            "quantity_astra": account.quantity_astra,
+        }, 200
 
     def buy_stock_now(self, current_user, request_data):
 
@@ -70,7 +55,7 @@ class UserControllers:
         else:
             return {"message": "Insufficient funds for the transaction.",
                     "status": "error",
-                    "data": data_trans}, 200
+                    "data": data_trans}, 400
 
     def sell_stock_now(self, current_user, request_data):
 
@@ -86,7 +71,7 @@ class UserControllers:
         else:
             return {"message": "Insufficient funds for the transaction.",
                     "status": "error",
-                    "data": data_trans}, 200
+                    "data": data_trans}, 400
 
     def buy_stock_limit(self, current_user, request_data):
 
@@ -110,7 +95,7 @@ class UserControllers:
                     "data": data}, 200
         else:
             return {"message": "Insufficient funds for the transaction.",
-                    "status": "error"}, 200
+                    "status": "error"}, 400
 
     def sell_stock_limit(self, current_user, request_data):
 
@@ -133,4 +118,4 @@ class UserControllers:
                     "data": data}, 200
         else:
             return {"message": "Insufficient funds for the transaction.",
-                    "status": "error"}, 200
+                    "status": "error"}, 400

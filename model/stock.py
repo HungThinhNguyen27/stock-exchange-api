@@ -27,6 +27,7 @@ class StockPrice(Base):
     high_price = Column(Integer, nullable=False)
     low_price = Column(Integer, nullable=False)
     volume = Column(Integer, nullable=False)
+    type = Column(String(20), nullable=False)
 
 
 class BookOrders(Base):

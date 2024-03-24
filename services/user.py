@@ -59,14 +59,6 @@ class UserService:
                 access_token_payload)
         return access_token
 
-    def deposite_coin(self, user_id_input, quantity_coin):
-        user = self.user_data_layer.get_by_id(user_id_input)
-
-        if user:
-            quantity_coin_decimal = Decimal(quantity_coin)
-            self.user_data_layer.update_quantity_coin(user,
-                                                      quantity_coin_decimal)
-
     def buy_stock_now(self, current_user, quantity_coin):
 
         transaction_process = self.buy_transaction.buy_now_trans(current_user,
@@ -102,3 +94,7 @@ class UserService:
             return get_balance_account
         else:
             return None
+
+    def get_account(self, user_name):
+        account = self.user_data_layer.get_by_name(user_name)
+        return account

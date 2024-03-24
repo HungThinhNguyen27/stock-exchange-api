@@ -146,7 +146,6 @@ class SellTransaction(MySqlConnect):
 
         """
         user = self.user_dl.get_by_name(current_user_name)
-
         check_balance = self.user_dl.check_balance_asa(user.user_id,
                                                        asa_quantity)
         if check_balance is None:

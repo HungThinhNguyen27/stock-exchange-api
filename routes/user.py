@@ -17,7 +17,7 @@ class UserRoutes:
                                     self.login, methods=["POST"])
         self.blueprint.add_url_rule("/desposite-coin", 'deposite_coin',
                                     self.jwt_ath.jwt_required_authentication(self.deposite_coin), methods=["PUT"])
-        self.blueprint.add_url_rule("/account-balance/<int:id>", 'get_account_balance',
+        self.blueprint.add_url_rule("/account-balance", 'get_account_balance',
                                     self.jwt_ath.jwt_required_authentication(self.get_account_balance,), methods=["GET"])
 
         self.blueprint.add_url_rule("/buy-now", 'buy_stock_now',
@@ -53,8 +53,9 @@ class UserRoutes:
 
         return jsonify(response_data), status_code
 
-    def get_account_balance(self, id):
-        response_data, status_code = self.user_controllers.get_account_balance(id
+    def get_account_balance(self):
+        current_user = get_jwt_identity()
+        response_data, status_code = self.user_controllers.get_balance_account(current_user
                                                                                )
         return jsonify(response_data), status_code
 

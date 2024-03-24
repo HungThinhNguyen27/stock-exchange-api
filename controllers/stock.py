@@ -3,6 +3,7 @@ from flask import jsonify
 from flask import request
 from collections import defaultdict
 from typing import List
+import datetime
 
 
 class StockControllers:
@@ -10,17 +11,17 @@ class StockControllers:
     def __init__(self) -> None:
         self.stock_service = StockService()
 
-    def stock_info(self, page, limit) -> dict:
+    def stock_info(self, page, limit, type) -> dict:
 
         if page <= 0:
-            return {"message": "This page does not exist"}, 400
+            return {"message": "This page does not exist"}, 404
 
         stock_list, next_page_url, total_pages = self.stock_service.get_stock_candles(
-            page, limit)
+            page, limit, type)
         stock_data = []
 
         if page > total_pages:
-            return {"message": "This page does not exist"}, 400
+            return {"message": "This page does not exist"}, 404
 
         metadata = {
             "page_number": page,
@@ -29,12 +30,16 @@ class StockControllers:
         }
 
         for stock in stock_list:
+            if type == "1D":
+                time = stock.time_stamp.strftime("%Y-%m-%d")
+            else:
+                time = stock.time_stamp.strftime("%Y-%m-%d %H:%M")
             stock_dict = {
                 "close_price": stock.close_price,
                 "high_price": stock.high_price,
                 "low_price": stock.low_price,
                 "open_price": stock.open_price,
-                "time_stamp": stock.time_stamp,
+                "time_stamp": time,
                 "volume": stock.volume
             }
             stock_data.append(stock_dict)
@@ -46,15 +51,15 @@ class StockControllers:
     def book_orders_buy_info(self, page, limit):
 
         if page <= 0:
-            return {"message": "This page does not exist"}, 400
+            return {"message": "This page does not exist"}, 404
 
-        book_order_list, book_order_count = self.stock_service.get_book_orders_buy(
-            page, limit)
+        book_order_list, book_order_count = self.stock_service.get_book_orders_buy(page,
+                                                                                   limit)
         next_page_url, total_pages = self.stock_service.page_param(book_order_count,
                                                                    page,
                                                                    limit)
         if page > total_pages:
-            return {"message": "This page does not exist"}, 400
+            return {"message": "This page does not exist"}, 404
 
         metadata = {
             "page_number": page,
@@ -74,7 +79,7 @@ class StockControllers:
     def book_orders_sell_info(self, page, limit):
 
         if page <= 0:
-            return {"message": "This page does not exist"}, 400
+            return {"message": "This page does not exist"}, 404
 
         book_order_list, book_order_count = self.stock_service.get_book_orders_sell(
             page, limit)
@@ -83,7 +88,7 @@ class StockControllers:
                                                                    page,
                                                                    limit)
         if page > total_pages:
-            return {"message": "This page does not exist"}, 400
+            return {"message": "This page does not exist"}, 404
 
         metadata = {
             "page_number": page,
@@ -103,15 +108,14 @@ class StockControllers:
     def market_trans_sold_info(self, page, limit):
 
         if page <= 0:
-            return {"message": "This page does not exist"}, 400
+            return {"message": "This page does not exist"}, 404
 
-        market_trans_list, next_page_url, total_pages = self.stock_service.get_market_transaction(
+        market_trans_list, next_page_url, total_pages, nearest_price = self.stock_service.get_market_transaction(
             page, limit)
-        market_trans_buy_data = []
         market_trans_sell_data = []
 
         if page > total_pages:
-            return {"message": "This page does not exist"}, 400
+            return {"message": "This page does not exist"}, 404
 
         metadata = {
             "page_number": page,
@@ -121,31 +125,31 @@ class StockControllers:
         for market_trans in market_trans_list:
             if market_trans.taker_type == "sold":
                 market_trans_dict_sell = {
-                    "sold_Transaction": {
-                        "price ": market_trans.price,
-                        "quantity_astra": market_trans.quantity_astra,
-                        "transaction_date": market_trans.transaction_date,
-                        "Taker_type": market_trans.taker_type,
-                    }}
+                    "price ": market_trans.price,
+                    "quantity_astra": market_trans.quantity_astra,
+                    "transaction_date": market_trans.transaction_date,
+                    "Taker_type": market_trans.taker_type,
+                }
                 market_trans_sell_data.append(market_trans_dict_sell)
 
         result = {"metadata": metadata,
+                  "nearest_price": nearest_price,
                   "book_order_sold": market_trans_sell_data}
         return result, 200
 
     def market_trans_bought_info(self, page, limit):
 
         if page <= 0:
-            return {"message": "This page does not exist"}, 400
+            return {"message": "This page does not exist"}, 404
 
-        market_trans_list, next_page_url, total_pages = self.stock_service.get_market_transaction(
+        market_trans_list, next_page_url, total_pages, nearest_price = self.stock_service.get_market_transaction(
             page, limit)
         # print("market_trans_list type", type(market_trans_list))
         market_trans_buy_data = []
         market_trans_sell_data = []
 
         if page > total_pages:
-            return {"message": "This page does not exist"}, 400
+            return {"message": "This page does not exist"}, 404
 
         metadata = {
             "page_number": page,
@@ -155,15 +159,15 @@ class StockControllers:
         for market_trans in market_trans_list:
             if market_trans.taker_type == "bought":
                 market_trans_dict_buy = {
-                    "purchased_transaction": {
-                        "price": market_trans.price,
-                        "quantity_astra": market_trans.quantity_astra,
-                        "transaction_date": market_trans.transaction_date,
-                        "Taker_type": market_trans.taker_type,
-                    }}
+                    "price": market_trans.price,
+                    "quantity_astra": market_trans.quantity_astra,
+                    "transaction_date": market_trans.transaction_date,
+                    "Taker_type": market_trans.taker_type,
+                }
                 market_trans_buy_data.append(market_trans_dict_buy)
 
         result = {"metadata": metadata,
+                  "nearest_price": nearest_price,
                   "book_order_bought": market_trans_buy_data}
         return result, 200
 

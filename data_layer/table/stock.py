@@ -14,9 +14,15 @@ class StockPriceDL(MySqlConnect):
     def commit(self) -> None:
         self.session.commit()
 
-    def get_stock_data(self, limit: int, offset: int) -> List[StockPrice]:
-        return self.session.query(StockPrice).order_by(StockPrice.time_stamp.desc()
-                                                       ).limit(limit).offset(offset).all()
+    def get_stock_data(self, limit: int, offset: int, type) -> List[StockPrice]:
+        return self.session.query(StockPrice)\
+            .filter(StockPrice.type == type)\
+            .order_by(StockPrice.time_stamp.desc())\
+            .limit(limit)\
+            .offset(offset)\
+            .all()
 
-    def count_stock_data(self):
-        return self.session.query(func.count(StockPrice.id)).scalar()
+    def count_stock_data(self, type):
+        return self.session.query(func.count(StockPrice.id))\
+            .filter(StockPrice.type == type)\
+            .scalar()
