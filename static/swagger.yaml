@@ -4,7 +4,7 @@ info:
   description: |-
     This project aims to collect stock data from the Tiki-Exchange website and provide APIs to display stock information as well as perform buy/sell transactions on the stock market. The main goal of the project is to create a flexible and powerful system for managing stock data and executing transactions efficiently.
 servers:
-  - url: http://localhost:5001
+  - url: http://127.0.0.1:5010
 tags:
   - name: Users
     description: Operations about user login/register

@@ -11,9 +11,6 @@ from model.stock import BookOrders, StockPrice
 import schedule
 import time
 import schedule
-import json
-import os
-import datetime
 
 
 class StockService:
@@ -120,5 +117,5 @@ class CrawlDataStockService:
 
 
 # a = CrawlDataStockService()
-# type = "5m"
+# type = "1w"
 # b = a.crawl_stock_price_data(type)

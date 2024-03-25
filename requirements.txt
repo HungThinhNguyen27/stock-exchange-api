@@ -30,3 +30,6 @@ python-dotenv==1.0.0
 mysql-connector-python==8.0.28
 Flask-JWT-Extended==4.6.0
 schedule==1.2.0
+redis 
+flask-redis
+flask-swagger-ui

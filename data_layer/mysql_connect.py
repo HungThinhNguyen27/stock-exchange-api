@@ -24,14 +24,11 @@ class MySqlConnect:
 
         )
 
-        # self.engine = create_engine(
-        #     f"mysql+mysqlconnector://root:thinh123@mysql:3306/StockData",
-        #     echo=False,
-        # )
-
         Base.metadata.create_all(self.engine)
         self.Session = sessionmaker(bind=self.engine)
 
         self.session = self.Session()
 
 # export PYTHONPATH=$PYTHONPATH:/Users/macos/Downloads/WORKSPACE/stock_project/data_layer
+
+# docker-compose stop

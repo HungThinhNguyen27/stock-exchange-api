@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 
 class Config(object):
     load_dotenv()
-    SECRET_KEY = "hungthinh"
+    SECRET_KEY = os.environ.get("KEY")
     MYSQL_HOST = os.environ.get("MYSQL_HOST")
     MYSQL_PORT = os.environ.get("MYSQL_PORT")
     MYSQL_USER = os.environ.get("MYSQL_USER")

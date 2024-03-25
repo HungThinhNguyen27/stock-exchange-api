@@ -1,23 +1,25 @@
 from services.stock import StockService, CrawlDataStockService
 from flask import jsonify
 from flask import request
-from collections import defaultdict
 from typing import List
-import datetime
+import json
+from data_layer.redis_connect import RedisConnect
 
 
 class StockControllers:
 
     def __init__(self) -> None:
         self.stock_service = StockService()
+        self.redis_connect = RedisConnect()
 
     def stock_info(self, page, limit, type) -> dict:
 
         if page <= 0:
             return {"message": "This page does not exist"}, 404
 
-        stock_list, next_page_url, total_pages = self.stock_service.get_stock_candles(
-            page, limit, type)
+        stock_list, next_page_url, total_pages = self.stock_service.get_stock_candles(page,
+                                                                                      limit,
+                                                                                      type)
         stock_data = []
 
         if page > total_pages:
@@ -46,6 +48,7 @@ class StockControllers:
 
         result = {"stock_candles": stock_data,
                   "metadata": metadata}
+
         return result, 200
 
     def book_orders_buy_info(self, page, limit):
@@ -110,8 +113,8 @@ class StockControllers:
         if page <= 0:
             return {"message": "This page does not exist"}, 404
 
-        market_trans_list, next_page_url, total_pages, nearest_price = self.stock_service.get_market_transaction(
-            page, limit)
+        market_trans_list, next_page_url, total_pages, nearest_price = self.stock_service.get_market_transaction(page,
+                                                                                                                 limit)
         market_trans_sell_data = []
 
         if page > total_pages:
@@ -142,11 +145,9 @@ class StockControllers:
         if page <= 0:
             return {"message": "This page does not exist"}, 404
 
-        market_trans_list, next_page_url, total_pages, nearest_price = self.stock_service.get_market_transaction(
-            page, limit)
-        # print("market_trans_list type", type(market_trans_list))
+        market_trans_list, next_page_url, total_pages, nearest_price = self.stock_service.get_market_transaction(page,
+                                                                                                                 limit)
         market_trans_buy_data = []
-        market_trans_sell_data = []
 
         if page > total_pages:
             return {"message": "This page does not exist"}, 404

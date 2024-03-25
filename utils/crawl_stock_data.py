@@ -8,7 +8,7 @@ class CrawlData:
     def api_constant(self):
 
         # period = 10080
-        period = 10_080
+        period = "10_080"
         start_date = datetime(2023, 11, 1, tzinfo=timezone.utc)
         start_timestamp = int(start_date.timestamp())
         url = "https://api.tiki.vn/rally/markets/asaxu/klines"

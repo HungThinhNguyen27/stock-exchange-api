@@ -2,16 +2,15 @@
 version: '3.8'
 
 services:
-
   mysql:
     image: mysql:8.0
     container_name: mysql-container
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: thinh123
-      MYSQL_DATABASE: StockData
+      MYSQL_ROOT_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DB}
     ports:
-      - "3307:3306"
+      - "${MYSQL_PORT}:3306"
     expose:
       - 3306
     networks:
@@ -26,11 +25,21 @@ services:
     environment:
       - MYSQL_PORT=3306
       - MYSQL_HOST=mysql
-      # - MYSQL_HOST=host.docker.internal
+      - REDIS_PORT=6379
+      - REDIS_HOST=redis
     ports:
-      - 5010:5000
+      - ${STOCK_EXCHANGE_PORT}:5000
     networks:
       - stock-exchange-apis-networks
+
+  redis:  
+    image: redis:latest
+    container_name: redis-container
+    ports:
+      - "${REDIS_PORT}:6379"
+    networks:
+      - stock-exchange-apis-networks
+
 
 networks:
   stock-exchange-apis-networks:
@@ -38,6 +47,7 @@ networks:
     driver: bridge
     external: true
 
-# # #docker-compose --file ./docker-compose.yaml up --detach
-# # # docker exec -it mysql-container bash
-# # # mysql -u root -p -P 3307
+# #docker-compose --file ./docker-compose.yaml up --detach
+# docker-compose stop stock-echange
+# docker-compose build stock-echange
+# docker-compose up -d stock-echange
