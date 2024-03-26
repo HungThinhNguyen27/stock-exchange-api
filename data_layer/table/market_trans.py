@@ -27,11 +27,9 @@ class MarketTransactionDL(MySqlConnect):
 
     def get_nearest_price(self):
 
-        # Subquery to find the most recent transaction date
         most_recent_date = self.session.query(
             func.max(MarketTransaction.transaction_date)).scalar_subquery()
 
-        # Main query to find the max price on the most recent transaction date
         max_price = self.session.query(func.max(MarketTransaction.price))\
             .filter(MarketTransaction.transaction_date == most_recent_date)\
             .scalar()

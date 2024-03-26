@@ -136,12 +136,10 @@ class BookOrdersDL(MySqlConnect):
 
         earliest_sellers = self.session.query(
             BookOrders.user_id,
-            func.min(BookOrders.amount_asa)
+            BookOrders.amount_asa
         ).filter(
             BookOrders.price_coins == min_price,
             BookOrders.taker_type == 'sell'
-        ).group_by(
-            BookOrders.user_id
         ).all()
 
         user_list = [(user_id, amount_asa)
@@ -154,12 +152,10 @@ class BookOrdersDL(MySqlConnect):
         # Lấy user_id của những người bán có giá thấp nhất
         earliest_sellers = self.session.query(
             BookOrders.user_id,
-            func.min(BookOrders.amount_asa)
+            BookOrders.amount_asa
         ).filter(
             BookOrders.price_coins == highest_price,
             BookOrders.taker_type == 'buy'
-        ).group_by(
-            BookOrders.user_id
         ).all()
 
         user_list = [(user_id, amount_asa)
@@ -278,3 +274,8 @@ class BookOrdersDL(MySqlConnect):
                 remaining_asa = 0
 
         self.session.commit()
+
+
+# a = BookOrdersDL()
+# b = a.get_buyer_ids_and_asa_by_highest_price(29)
+# print(b)

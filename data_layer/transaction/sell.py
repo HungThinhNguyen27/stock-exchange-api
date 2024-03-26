@@ -22,7 +22,7 @@ class SellTransaction(MySqlConnect):
         buyer_ids = self.book_order_dl.get_buyer_ids_and_asa_by_highest_price(highest_price
                                                                               )
         for buyer_id, amount_asa in buyer_ids:
-            coin_minus = amount_asa // highest_price
+            coin_minus = amount_asa * highest_price
             self.user_dl.update_plus_astra(buyer_id, amount_asa)
             self.market_trans_dl.add_record(highest_price,
                                             buyer_id,
@@ -59,7 +59,7 @@ class SellTransaction(MySqlConnect):
         self.market_trans_dl.add_record(highest_price,
                                         current_user_id,
                                         coins_received,
-                                        asa_spent,
+                                        astra_user_using,
                                         taker_type="sold")
 
         self.book_order_dl.update_by_highest_price(highest_price,
@@ -92,7 +92,7 @@ class SellTransaction(MySqlConnect):
                     asa = astra_total_spent
                 else:
                     coins_can_received = astra_user_using * highest_price
-                    asa = astra_user_using
+                    asa = coins_can_received // highest_price
                     astra_user_using, astra_total_spent, coins_total_received = self.process_partial_sell(astra_user_using,
                                                                                                           highest_price,
                                                                                                           coins_can_received,

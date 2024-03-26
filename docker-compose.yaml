@@ -40,7 +40,6 @@ services:
     networks:
       - stock-exchange-apis-networks
 
-
 networks:
   stock-exchange-apis-networks:
     name:  stock-exchange-apis-networks
