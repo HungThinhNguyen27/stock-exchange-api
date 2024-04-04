@@ -38,7 +38,7 @@ Run server on Localhost:
 
 Run server on Docker:
 
-    docker-compose --file ./docker-compose.yaml up --detach
+    docker-compose --env-file config.yaml up --detach
     
 ## Usage
 
