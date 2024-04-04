@@ -1,12 +1,18 @@
 import os
 from dotenv import load_dotenv
+import yaml
 
 
 class Config(object):
-    load_dotenv()
-    SECRET_KEY = os.environ.get("KEY")
-    MYSQL_HOST = os.environ.get("MYSQL_HOST")
-    MYSQL_PORT = os.environ.get("MYSQL_PORT")
-    MYSQL_USER = os.environ.get("MYSQL_USER")
-    MYSQL_PASSWORD = os.environ.get("MYSQL_PASSWORD")
-    MYSQL_DB = os.environ.get("MYSQL_DB")
+    with open("config.yaml", 'r') as stream:
+        config = yaml.safe_load(stream)
+
+    SECRET_KEY = config['KEY']
+    MYSQL_HOST = config['MYSQL_HOST']
+    MYSQL_PORT = config['MYSQL_PORT']
+    MYSQL_USER = config['MYSQL_USER']
+    MYSQL_PASSWORD = config['MYSQL_PASSWORD']
+    MYSQL_DB = config['MYSQL_DB']
+
+    REDIS_PORT = config['REDIS_PORT']
+    REDIS_HOST = config['REDIS_HOST']

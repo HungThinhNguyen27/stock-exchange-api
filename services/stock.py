@@ -8,9 +8,6 @@ from flask import request
 from utils.stock_utils import StockUtils
 from typing import List, Tuple
 from model.stock import BookOrders, StockPrice
-import schedule
-import time
-import schedule
 
 
 class StockService:
@@ -22,7 +19,7 @@ class StockService:
         self.book_orders_dl = BookOrdersDL()
         self.market_trans_dl = MarketTransactionDL()
 
-    def get_stock_candles(self, page: int, limit: int, type) -> Tuple[List['StockPrice'], str, int]:
+    def get_stock_candles(self, interval, page: int, limit: int) -> Tuple[List['StockPrice'], str, int]:
         """
         Get stock candles based on pagination parameters.
 
@@ -32,13 +29,17 @@ class StockService:
         """
 
         offset = (page - 1) * limit
-        stock_list = self.stock_data_layers.get_stock_data(limit, offset, type)
-        stock_count = self.stock_data_layers.count_stock_data(type)
+        stock_list = self.stock_data_layers.get_stock_data(interval,
+                                                           limit,
+                                                           offset)
+        formatted_stock_list = self.stock_utils.format_data(stock_list)
+        stock_count = self.stock_data_layers.calculate_count(interval
+                                                             )
         next_page_url, total_pages = self.stock_utils.page_param(stock_count,
                                                                  page,
                                                                  limit)
 
-        return stock_list, next_page_url, total_pages
+        return formatted_stock_list, next_page_url, total_pages
 
     def get_market_transaction(self, page, limit):
         offset = (page - 1) * limit
@@ -90,7 +91,7 @@ class CrawlDataStockService:
         self.stock_data_layers = StockPriceDL()
         self.crawl_data = CrawlData()
 
-    def crawl_stock_price_data(self, type):
+    def crawl_stock_price_data(self):
         data_dict = self.crawl_data.crawl_stock_price()
         for record in data_dict:
             stock_entity = StockPrice(
@@ -100,22 +101,10 @@ class CrawlDataStockService:
                 high_price=record.get('high_price'),
                 low_price=record.get('low_price'),
                 volume=record.get('volume'),
-                type=type
             )
             self.stock_data_layers.add(stock_entity)
             print(record)
 
-    def run_everyday(self) -> None:
-        schedule.every().day.at("15:51").do(self.crawl_stock_price_data)
-        allow_crawling = True
-        start_time = time.time()
-        while allow_crawling:
-            schedule.run_pending()
-            elapsed_time = time.time() - start_time
-            if elapsed_time == 30:
-                break
-
 
 # a = CrawlDataStockService()
-# type = "1w"
-# b = a.crawl_stock_price_data(type)
+# b = a.crawl_stock_price_data()

@@ -12,43 +12,24 @@ class StockControllers:
         self.stock_service = StockService()
         self.redis_connect = RedisConnect()
 
-    def stock_info(self, page, limit, type) -> dict:
+    def stock_info(self, page, limit, interval) -> dict:
 
         if page <= 0:
             return {"message": "This page does not exist"}, 404
 
-        stock_list, next_page_url, total_pages = self.stock_service.get_stock_candles(page,
-                                                                                      limit,
-                                                                                      type)
-        stock_data = []
-
+        stock_list, next_page_url, total_pages = self.stock_service.get_stock_candles(interval,
+                                                                                      page,
+                                                                                      limit,)
         if page > total_pages:
             return {"message": "This page does not exist"}, 404
 
         metadata = {
+            "period": interval,
             "page_number": page,
             "total_pages": total_pages
-
         }
-
-        for stock in stock_list:
-            if type == "1D":
-                time = stock.time_stamp.strftime("%Y-%m-%d")
-            else:
-                time = stock.time_stamp.strftime("%Y-%m-%d %H:%M")
-            stock_dict = {
-                "close_price": stock.close_price,
-                "high_price": stock.high_price,
-                "low_price": stock.low_price,
-                "open_price": stock.open_price,
-                "time_stamp": time,
-                "volume": stock.volume
-            }
-            stock_data.append(stock_dict)
-
-        result = {"stock_candles": stock_data,
+        result = {"stock_candles": stock_list,
                   "metadata": metadata}
-
         return result, 200
 
     def book_orders_buy_info(self, page, limit):

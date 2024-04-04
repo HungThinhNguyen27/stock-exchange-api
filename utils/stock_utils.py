@@ -42,3 +42,19 @@ class StockUtils:
             )
         return next_page_url, total_pages
 
+    def format_data(self, records):
+        stock_data = []
+        for record in records:
+            # Explicitly converting minutes to an integer
+            minutes = int(float(record[2]))
+            datetime_string = f"{record[0].strftime('%Y-%m-%d')} {str(record[1]).zfill(2)}:{str(minutes).zfill(2)}"
+            stock_dict = {
+                "time_stamp": datetime_string,
+                "open_price": record[3],
+                "close_price": record[4],
+                "high_price": record[5],
+                "low_price": record[6],
+                "volume": int(record[7])
+            }
+            stock_data.append(stock_dict)
+        return stock_data

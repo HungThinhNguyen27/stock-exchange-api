@@ -11,7 +11,6 @@ MYSQL_USER = Config.MYSQL_USER
 MYSQL_PASSWORD = Config.MYSQL_PASSWORD
 MYSQL_DB = Config.MYSQL_DB
 MYSQL_PORT = Config.MYSQL_PORT
-
 Base = sqlalchemy.orm.declarative_base()
 
 
@@ -21,7 +20,6 @@ class MySqlConnect:
             f"mysql+mysqlconnector://{MYSQL_USER}:{MYSQL_PASSWORD}@{MYSQL_HOST}:{MYSQL_PORT}/{MYSQL_DB}",
             echo=False,
             isolation_level="READ COMMITTED"
-
         )
 
         Base.metadata.create_all(self.engine)
@@ -30,5 +28,3 @@ class MySqlConnect:
         self.session = self.Session()
 
 # export PYTHONPATH=$PYTHONPATH:/Users/macos/Downloads/WORKSPACE/stock_project/data_layer
-
-# docker-compose stop

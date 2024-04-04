@@ -136,19 +136,20 @@ paths:
           description: Unauthorized access
 
 
-  /stock-candles/{type}:
+  /stock-candles:
     get:
       tags:
         - Stock
       summary: Get stock-candles
       description: Retrieve stock information according to candlestick chart.
       parameters:
-        - name: type
-          in: path
-          description: Select time type -> 5m 15m 30m 1h 1D 1W
+        - name: period
+          in: query
+          description: Enter the number of minutes -> 5, 15, 30, 60,1440(1D), 10080(1W)
           required: true
           schema:
-            type: string
+            type: integer
+            default: 5
         - name: page
           in: query
           description: Page number for pagination
@@ -473,7 +474,7 @@ paths:
           404:
             description: This page does not exist
   /buy-now:
-    put:
+    post:
       tags:
         - Transaction
       summary: Transaction buy now
@@ -532,7 +533,7 @@ paths:
           description: Unauthorized access
 
   /sell-now:
-    put:
+    post:
       tags:
         - Transaction
       summary: Transaction sell now
@@ -591,7 +592,7 @@ paths:
           description: Unauthorized access
 
   /buy-limit:
-    put:
+    post:
       tags:
         - Transaction
       summary: Transaction buy limit
@@ -650,7 +651,7 @@ paths:
           description: Unauthorized access
 
   /sell-limit:
-    put:
+    post:
       tags:
         - Transaction
       summary: Transaction sell limit

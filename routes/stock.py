@@ -12,7 +12,7 @@ class StockRoutes:
         self.redis_connect = RedisConnect()
 
         self.blueprint = Blueprint('stock', __name__)
-        self.blueprint.add_url_rule("/stock-candles/<string:type>", 'get_stock_info',
+        self.blueprint.add_url_rule("/stock-candles", 'get_stock_info',
                                     self.get_stock_info, methods=["GET"])
 
         self.blueprint.add_url_rule("/book-orders-buy", 'get_book_orders_buy',
@@ -30,11 +30,12 @@ class StockRoutes:
         self.blueprint.add_url_rule("/crawl_stock_price_data", 'crawl_stock_price_data',
                                     self.crawl_stock_price_data, methods=["POST"])
 
-    def get_stock_info(self, type):
+    def get_stock_info(self):
+        interval = int(request.args.get("period", 5))
         page = int(request.args.get("page", 1))
         limit = int(request.args.get("limit", 10))
 
-        cache_key = f"stock_data:{type}:{page}:{limit}"
+        cache_key = f"stock_data:{interval}:{page}:{limit}"
         cached_data = self.redis_connect.get_from_cache(cache_key)
         if cached_data:
             resonponse = json.loads(cached_data)
@@ -42,9 +43,10 @@ class StockRoutes:
         else:
             resonponse, status_code = self.stock_controllers.stock_info(page,
                                                                         limit,
-                                                                        type)
+                                                                        interval)
             self.redis_connect.add_to_cache(cache_key,
-                                            json.dumps(resonponse))
+                                            json.dumps(resonponse),
+                                            10)
         return jsonify(resonponse), status_code
 
     def get_book_orders_buy(self):

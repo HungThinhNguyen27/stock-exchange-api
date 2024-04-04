@@ -46,7 +46,8 @@ networks:
     driver: bridge
     external: true
 
-# #docker-compose --file ./docker-compose.yaml up --detach
+# docker-compose --env-file config.yaml up --detach
 # docker-compose stop stock-echange
 # docker-compose build stock-echange
 # docker-compose up -d stock-echange
+# docker-compose --env-file .env --file ./docker-compose.yaml up --detach

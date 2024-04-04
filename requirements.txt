@@ -33,3 +33,4 @@ schedule==1.2.0
 redis 
 flask-redis
 flask-swagger-ui
+PyYAML

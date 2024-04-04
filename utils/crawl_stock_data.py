@@ -1,6 +1,7 @@
 
 from datetime import datetime, timezone, timedelta
 import requests
+import pytz
 
 
 class CrawlData:
@@ -8,8 +9,8 @@ class CrawlData:
     def api_constant(self):
 
         # period = 10080
-        period = "10_080"
-        start_date = datetime(2023, 11, 1, tzinfo=timezone.utc)
+        period = "1"
+        start_date = datetime(2023, 12, 1, tzinfo=timezone.utc)
         start_timestamp = int(start_date.timestamp())
         url = "https://api.tiki.vn/rally/markets/asaxu/klines"
         current_date = datetime.utcnow()
@@ -42,11 +43,15 @@ class CrawlData:
         }
         return url, params_list, headers
 
-    def convert_timestamp(self, data_list):
+    def convert_timestamp_to_vietnam(self, data_list):
+        # Define the Vietnam timezone
+        vietnam_timezone = pytz.timezone('Asia/Ho_Chi_Minh')
+
         for record in data_list:
-            normal_time = datetime.utcfromtimestamp(
-                record['time_stamp']).strftime('%Y-%m-%d %H:%M')
-            record['time_stamp'] = normal_time
+            normal_time = datetime.utcfromtimestamp(record['time_stamp'])
+            vietnam_time = normal_time.replace(
+                tzinfo=pytz.utc).astimezone(vietnam_timezone)
+            record['time_stamp'] = vietnam_time.strftime('%Y-%m-%d %H:%M')
         return data_list
 
     def crawl_stock_price(self):
@@ -58,7 +63,6 @@ class CrawlData:
         if response.status_code == 200:
             data = response.json()
             data_list.extend(data)
-
         formatted_data = [
             {
                 'time_stamp': record[0],
@@ -70,7 +74,7 @@ class CrawlData:
             }
             for record in data_list
         ]
-        return self.convert_timestamp(formatted_data)
+        return self.convert_timestamp_to_vietnam(formatted_data)
 
 
 # a = CrawlData()
