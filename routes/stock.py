@@ -12,8 +12,12 @@ class StockRoutes:
         self.redis_connect = RedisConnect()
 
         self.blueprint = Blueprint('stock', __name__)
+
         self.blueprint.add_url_rule("/stock-candles", 'get_stock_info',
                                     self.get_stock_info, methods=["GET"])
+
+        self.blueprint.add_url_rule("/download-stock-candles", 'dowload_file_stock_price',
+                                    self.dowload_file_stock_price, methods=["GET"])
 
         self.blueprint.add_url_rule("/book-orders-buy", 'get_book_orders_buy',
                                     self.get_book_orders_buy, methods=["GET"])
@@ -29,6 +33,13 @@ class StockRoutes:
 
         self.blueprint.add_url_rule("/crawl_stock_price_data", 'crawl_stock_price_data',
                                     self.crawl_stock_price_data, methods=["POST"])
+
+    def dowload_file_stock_price(self):
+        interval = int(request.args.get("period", 5))
+        type_file = str(request.args.get("type-file", json))
+        resonponse, status_code = self.stock_controllers.dowload_stock_info(interval,
+                                                                            type_file)
+        return jsonify(resonponse), status_code
 
     def get_stock_info(self):
         interval = int(request.args.get("period", 5))

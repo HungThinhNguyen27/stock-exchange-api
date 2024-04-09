@@ -1,6 +1,8 @@
 from collections import defaultdict
 from flask import request
-import math
+import json
+import csv
+import pandas as pd
 
 
 class StockUtils:
@@ -45,7 +47,6 @@ class StockUtils:
     def format_data(self, records):
         stock_data = []
         for record in records:
-            # Explicitly converting minutes to an integer
             minutes = int(float(record[2]))
             datetime_string = f"{record[0].strftime('%Y-%m-%d')} {str(record[1]).zfill(2)}:{str(minutes).zfill(2)}"
             stock_dict = {
@@ -58,3 +59,18 @@ class StockUtils:
             }
             stock_data.append(stock_dict)
         return stock_data
+
+    def download_stock_info(self, file_type, data, interval):
+        file_name = f'/app/data/stock_info_{interval}min'
+
+        if file_type.lower() == 'json':
+            with open(f'{file_name}.json', 'w') as jsonfile:
+                json.dump(data, jsonfile, indent=4)
+
+        elif file_type.lower() == 'csv':
+            keys = data[0].keys()
+            with open(f'{file_name}.csv', 'w', newline='') as csvfile:
+                writer = csv.DictWriter(csvfile, fieldnames=keys)
+                writer.writeheader()
+                for record in data:
+                    writer.writerow(record)

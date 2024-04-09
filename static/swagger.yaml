@@ -256,7 +256,38 @@ paths:
                   
         404:
           description: This page does not exist
-
+  /download-stock-candles:
+      get:
+        tags:
+          - Stock
+        summary: download stock-candles
+        description: download stock-candles by period and type-file 
+        parameters:
+          - name: period
+            in: query
+            description: Enter the number of minutes -> 5, 15, 30, 60,1440(1D), 10080(1W)
+            required: true
+            schema:
+              type: integer
+              default: 60
+          - name: type-file 
+            in: query
+            description: Enter the type-file (json or csv)
+            required: true
+            schema:
+              type: string
+              default: json
+        responses:
+          200:
+            description: Successful response
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    status: 
+                      type: string
+                      example: {"status": "download file stock_info_60min.json success"}
 
   /book-orders-buy:
       get:
@@ -296,6 +327,8 @@ paths:
                           ]
           404:
             description: This page does not exist
+
+
 
   /book-orders-sell:
       get:

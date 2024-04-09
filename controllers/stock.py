@@ -12,6 +12,18 @@ class StockControllers:
         self.stock_service = StockService()
         self.redis_connect = RedisConnect()
 
+    def dowload_stock_info(self, interval, type_file) -> dict:
+
+        if type_file.lower() not in ['json', 'csv']:
+            return {"status": "Please choose type-file as json or csv !."}, 400
+
+        self.stock_service.dowload_stock_info(interval,
+                                              type_file)
+
+        result = {
+            "status": f"download file stock_info_{interval}min.{type_file} successfully."}
+        return result, 200
+
     def stock_info(self, page, limit, interval) -> dict:
 
         if page <= 0:

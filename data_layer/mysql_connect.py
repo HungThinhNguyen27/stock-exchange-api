@@ -12,6 +12,7 @@ MYSQL_PASSWORD = Config.MYSQL_PASSWORD
 MYSQL_DB = Config.MYSQL_DB
 MYSQL_PORT = Config.MYSQL_PORT
 Base = sqlalchemy.orm.declarative_base()
+# 3306
 
 
 class MySqlConnect:

@@ -19,6 +19,13 @@ class StockService:
         self.book_orders_dl = BookOrdersDL()
         self.market_trans_dl = MarketTransactionDL()
 
+    def dowload_stock_info(self, interval, file_type):
+        data = self.stock_data_layers.get_stock_data(interval,
+                                                     None,
+                                                     None)
+        format_data = self.stock_utils.format_data(data)
+        self.stock_utils.download_stock_info(file_type, format_data, interval)
+
     def get_stock_candles(self, interval, page: int, limit: int) -> Tuple[List['StockPrice'], str, int]:
         """
         Get stock candles based on pagination parameters.
@@ -106,5 +113,5 @@ class CrawlDataStockService:
             print(record)
 
 
-# a = CrawlDataStockService()
-# b = a.crawl_stock_price_data()
+a = CrawlDataStockService()
+b = a.crawl_stock_price_data()

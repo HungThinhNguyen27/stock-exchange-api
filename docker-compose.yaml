@@ -29,6 +29,8 @@ services:
       - REDIS_HOST=redis
     ports:
       - ${STOCK_EXCHANGE_PORT}:5000
+    volumes:
+        - ./data_file:/app/data
     networks:
       - stock-exchange-apis-networks
 
@@ -51,3 +53,5 @@ networks:
 # docker-compose build stock-echange
 # docker-compose up -d stock-echange
 # docker-compose --env-file .env --file ./docker-compose.yaml up --detach
+# docker run -v ./Users/macos/Desktop:/Users/macos/Downloads/WORKSPACE/stock_project stock_project-stock-echange
+#/Users/macos/Desktop
