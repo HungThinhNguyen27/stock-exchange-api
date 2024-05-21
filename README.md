@@ -49,7 +49,7 @@ Run server on Docker:
     http://127.0.0.1:5010
 
 3. Swagger UI interface for specific operations of APIs on Docker: 
-    http://127.0.0.1:5010/api/docs
+    http://172.20.10.5:5001/api/docs
 
 ## APIs Endpoints
 

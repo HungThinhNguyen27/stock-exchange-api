@@ -985,3 +985,9 @@
 2024-05-21 11:49:02,366 - INFO - Record: {'time_stamp': '2024-05-21 04:49', 'open_price': 36, 'close_price': 36, 'high_price': 36, 'low_price': 36, 'volume': 0}
 2024-05-21 11:50:02,638 - INFO - Record: {'time_stamp': '2024-05-21 04:50', 'open_price': 36, 'close_price': 36, 'high_price': 36, 'low_price': 36, 'volume': 0}
 2024-05-21 11:51:03,250 - INFO - Record: {'time_stamp': '2024-05-21 04:51', 'open_price': 36, 'close_price': 36, 'high_price': 36, 'low_price': 36, 'volume': 0}
+2024-05-21 11:52:03,088 - INFO - Record: {'time_stamp': '2024-05-21 04:52', 'open_price': 36, 'close_price': 36, 'high_price': 36, 'low_price': 36, 'volume': 0}
+2024-05-21 11:53:02,648 - INFO - Record: {'time_stamp': '2024-05-21 04:53', 'open_price': 36, 'close_price': 36, 'high_price': 36, 'low_price': 36, 'volume': 0}
+2024-05-21 11:54:03,393 - INFO - Record: {'time_stamp': '2024-05-21 04:54', 'open_price': 36, 'close_price': 36, 'high_price': 36, 'low_price': 36, 'volume': 0}
+2024-05-21 11:55:02,534 - INFO - Record: {'time_stamp': '2024-05-21 04:55', 'open_price': 36, 'close_price': 36, 'high_price': 36, 'low_price': 36, 'volume': 0}
+2024-05-21 11:56:02,759 - INFO - Record: {'time_stamp': '2024-05-21 04:56', 'open_price': 36, 'close_price': 36, 'high_price': 36, 'low_price': 36, 'volume': 0}
+2024-05-21 11:57:03,978 - INFO - Record: {'time_stamp': '2024-05-21 04:57', 'open_price': 36, 'close_price': 36, 'high_price': 36, 'low_price': 36, 'volume': 0}

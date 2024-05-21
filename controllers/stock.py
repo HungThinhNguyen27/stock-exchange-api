@@ -46,8 +46,9 @@ class StockControllers:
             self.redis_connect.add_to_cache(cache_key,
                                             json.dumps(result),
                                             time_to_live)
-        if page > total_pages:
-            return {"message": "This page does not exist"}, 404
+        # print(total_pages)
+        # if page > total_pages:
+        #     return {"message": "This page does not exist"}, 404
         status_code = 200
 
         return result, status_code

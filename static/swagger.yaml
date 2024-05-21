@@ -8,8 +8,8 @@ servers:
   #   description: Server running on Docker
   - url: http://127.0.0.1:5001
     description: Server running on Localhost
-  # - url: http://192.168.1.11:5001
-  #   description: Internal network server
+  - url: http://172.20.10.5:5001
+    description: Internal network server
 tags:
   - name: Users
     description: Operations about user login/register
