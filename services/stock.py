@@ -8,6 +8,8 @@ from flask import request
 from utils.stock_utils import StockUtils
 from typing import List, Tuple
 from model.stock import BookOrders, StockPrice
+from data_layer.redis_connect import RedisConnect
+import json
 
 
 class StockService:
@@ -18,15 +20,28 @@ class StockService:
         self.stock_utils = StockUtils()
         self.book_orders_dl = BookOrdersDL()
         self.market_trans_dl = MarketTransactionDL()
+        self.redis_connect = RedisConnect()
 
-    def dowload_stock_info(self, interval, file_type):
-        data = self.stock_data_layers.get_stock_data(interval,
-                                                     None,
-                                                     None)
-        format_data = self.stock_utils.format_data(data)
-        self.stock_utils.download_stock_info(file_type, format_data, interval)
+    def dowload_stock_info(self, period, file_type):
 
-    def get_stock_candles(self, interval, page: int, limit: int) -> Tuple[List['StockPrice'], str, int]:
+        cache_key = f"stock_info_{period}min.{file_type}"
+        cached_data = self.redis_connect.get_from_cache(cache_key)
+        if cached_data:
+            file_data = json.loads(cached_data)
+        else:
+            stock_list = self.stock_data_layers.get()
+            all_time_stamp = [stock.time_stamp for stock in stock_list]
+            stock_list_period = self.stock_data_layers.get_stock_data_by_period(period,
+                                                                                all_time_stamp)
+            file_data = self.stock_utils.format_data(stock_list_period)
+            self.redis_connect.add_to_cache(
+                cache_key, json.dumps(file_data), period)
+
+        return self.stock_utils.download_file(file_type,
+                                              file_data,
+                                              period)
+
+    def get_stock_candles_by_period(self, period, page: int, limit: int) -> Tuple[List['StockPrice'], str, int]:
         """
         Get stock candles based on pagination parameters.
 
@@ -35,20 +50,24 @@ class StockService:
             - limit (int): Number of items per page.
         """
 
-        offset = (page - 1) * limit
-        stock_list = self.stock_data_layers.get_stock_data(interval,
-                                                           limit,
-                                                           offset)
-        formatted_stock_list = self.stock_utils.format_data(stock_list)
-        stock_count = self.stock_data_layers.calculate_count(interval
-                                                             )
-        next_page_url, total_pages = self.stock_utils.page_param(stock_count,
-                                                                 page,
-                                                                 limit)
+        # offset = (page - 1) * limit
+        limited_time_stamps_list = self.stock_data_layers.get_limited_time_stamps_by_period(period,
+                                                                                            limit,
+                                                                                            page)
 
-        return formatted_stock_list, next_page_url, total_pages
+        stock_list = self.stock_data_layers.get_stock_data_by_period(period,
+                                                                     limited_time_stamps_list)
+
+        stock_count = self.stock_data_layers.calculate_count(period)
+
+        formatted_stock_list = self.stock_utils.format_data(stock_list)
+
+        total_pages = (stock_count + limit - 1) // limit
+
+        return formatted_stock_list, total_pages
 
     def get_market_transaction(self, page, limit):
+
         offset = (page - 1) * limit
         market_trans = self.market_trans_dl.get(limit,
                                                 offset)
@@ -60,30 +79,16 @@ class StockService:
 
         return market_trans, next_page_url, total_pages, nearest_price
 
-    def get_book_orders_buy(self, page: int, limit: int) -> Tuple[List['BookOrders'], int]:
+    def get_book_orders_by_taker_type(self, page: int, limit: int, taker_type) -> Tuple[List['BookOrders'], int]:
         """
 
         """
         offset = (page - 1) * limit
-        taker_type = 'buy'
         book_order_list = self.book_orders_dl.sum_total_by_taker_type(taker_type,
                                                                       offset,
                                                                       limit)
         book_order_count = self.book_orders_dl.count_distinct_prices(taker_type
                                                                      )
-        return book_order_list, book_order_count
-
-    def get_book_orders_sell(self, page: int, limit: int) -> Tuple[List['BookOrders'], int]:
-        """
-
-        """
-        offset = (page - 1) * limit
-        taker_type = 'sell'
-        book_order_list = self.book_orders_dl.sum_total_by_taker_type(taker_type,
-                                                                      offset,
-                                                                      limit)
-        book_order_count = self.book_orders_dl.count_distinct_prices(
-            taker_type)
         return book_order_list, book_order_count
 
     def page_param(self, price_list_count, page, limit):

@@ -34,3 +34,4 @@ redis
 flask-redis
 flask-swagger-ui
 PyYAML
+flasgger

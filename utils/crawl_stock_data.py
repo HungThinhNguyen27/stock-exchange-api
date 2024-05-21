@@ -2,20 +2,31 @@
 from datetime import datetime, timezone, timedelta
 import requests
 import pytz
+from data_layer.table.stock import StockPriceDL
 
 
 class CrawlData:
+    def __init__(self) -> None:
+        self.StockPriceDL = StockPriceDL()
+
+    def latest_stock_record(self):
+        record = self.StockPriceDL.get_one_latest_record()
+        return record.time_stamp
 
     def api_constant(self):
 
-        # period = 10080
         period = "1"
-        start_date = datetime(2023, 12, 1, tzinfo=timezone.utc)
-        start_timestamp = int(start_date.timestamp())
-        url = "https://api.tiki.vn/rally/markets/asaxu/klines"
         current_date = datetime.utcnow()
         current_timestamp = int(current_date.timestamp())
 
+        latest_record = self.latest_stock_record()
+        start_date = latest_record + timedelta(minutes=1)
+        start_timestamp = int(start_date.timestamp())
+
+        url = "https://api.tiki.vn/rally/markets/asaxu/klines"
+
+        # current_date = datetime(2021, 4, 1, tzinfo=timezone.utc)
+        # current_timestamp = int(current_date.timestamp())
         # start_date = current_date - timedelta(days=1)
         # start_timestamp = int(start_date.timestamp())
 

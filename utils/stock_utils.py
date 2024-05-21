@@ -1,8 +1,9 @@
 from collections import defaultdict
-from flask import request
+from flask import request, send_file
 import json
 import csv
 import pandas as pd
+from io import BytesIO
 
 
 class StockUtils:
@@ -60,17 +61,81 @@ class StockUtils:
             stock_data.append(stock_dict)
         return stock_data
 
-    def download_stock_info(self, file_type, data, interval):
-        file_name = f'/app/data/stock_info_{interval}min'
+    def download_file(self, type_file, file_data, interval):
 
-        if file_type.lower() == 'json':
-            with open(f'{file_name}.json', 'w') as jsonfile:
-                json.dump(data, jsonfile, indent=4)
+        filename = f'stock_info_{interval}min.{type_file}'
 
-        elif file_type.lower() == 'csv':
-            keys = data[0].keys()
-            with open(f'{file_name}.csv', 'w', newline='') as csvfile:
-                writer = csv.DictWriter(csvfile, fieldnames=keys)
+        if type_file == 'json':
+            file_content = json.dumps(file_data, indent=4)
+            mimetype = 'application/json'
+            file_bytes = file_content.encode('utf-8')
+            file_obj = BytesIO(file_bytes)
+
+        elif type_file == 'csv':
+            with open(filename, mode='w', newline='') as csv_file:
+                fieldnames = file_data[0].keys()
+                writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
                 writer.writeheader()
-                for record in data:
-                    writer.writerow(record)
+                for row in file_data:
+                    writer.writerow(row)
+            mimetype = 'text/csv'
+            file_obj = filename
+
+        return send_file(file_obj, as_attachment=True, download_name=filename, mimetype=mimetype)
+
+    def data_frame(self, stock_list):
+        data = []
+        for row in stock_list:
+            row_data = [row.time_stamp,
+                        row.open_price,
+                        row.close_price,
+                        row.high_price,
+                        row.low_price,
+                        row.volume
+                        ]
+            data.append(row_data)
+        return pd.DataFrame(data, columns=['time_stamp',
+                                           'open_price',
+                                           'close_price',
+                                           'high_price',
+                                           'low_price',
+                                           'volume'])
+
+    def time_calculate(self, data, interval_minutes):
+
+        # df['time_stamp'] = pd.to_datetime(df['time_stamp'])
+
+        if interval_minutes == 240:
+            resample_rule = '4H'
+            origin = pd.Timestamp(
+                data['time_stamp'].dt.date.min()) + pd.Timedelta(hours=3)
+            group_column = 'time_stamp'
+        else:
+            resample_rule = f'{interval_minutes}T'
+            group_column = 'time_stamp'
+            origin = 'start_day'
+
+        grouped = data.resample(resample_rule, on=group_column, origin=origin)
+        aggregated_df = grouped.agg(
+            open_price=('open_price', 'first'),
+            close_price=('close_price', 'last'),
+            high_price=('high_price', 'max'),
+            low_price=('low_price', 'min'),
+            volume=('volume', 'sum')
+        )
+
+        aggregated_df = aggregated_df.reset_index()
+        aggregated_df = aggregated_df.iloc[::-1]
+
+        return aggregated_df
+
+    def paginated(self, limit, offset, data):
+        total_pages = (len(data) + limit - 1) // limit
+        end = offset + limit
+        paginated_df = data.iloc[offset:end]
+        paginated_df = paginated_df.reset_index(drop=True)
+        paginated_df['time_stamp'] = paginated_df['time_stamp'].apply(
+            lambda x: f"{x.strftime('%Y-%m-%d')} {str(x.hour).zfill(2)}:{str(x.minute).zfill(2)}"
+        )
+
+        return paginated_df, total_pages

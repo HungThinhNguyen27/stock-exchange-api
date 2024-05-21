@@ -1,14 +1,14 @@
-from flask import Blueprint, jsonify, request
-from controllers.stock import StockControllers, CrawlStockController
+from flask import Blueprint, jsonify, request, send_from_directory, send_file
+from controllers.stock import StockControllers
 from data_layer.redis_connect import RedisConnect
 import json
 
 
-class StockRoutes:
+class Stock:
 
     def __init__(self) -> None:
+        super().__init__()
         self.stock_controllers = StockControllers()
-        self.crawl_stock_controllers = CrawlStockController()
         self.redis_connect = RedisConnect()
 
         self.blueprint = Blueprint('stock', __name__)
@@ -19,75 +19,38 @@ class StockRoutes:
         self.blueprint.add_url_rule("/download-stock-candles", 'dowload_file_stock_price',
                                     self.dowload_file_stock_price, methods=["GET"])
 
-        self.blueprint.add_url_rule("/book-orders-buy", 'get_book_orders_buy',
-                                    self.get_book_orders_buy, methods=["GET"])
+        self.blueprint.add_url_rule("/book-orders", 'get_book_orders',
+                                    self.get_book_orders, methods=["GET"])
 
-        self.blueprint.add_url_rule("/book-orders-sell", 'get_book_orders_sell',
-                                    self.get_book_orders_sell, methods=["GET"])
-
-        self.blueprint.add_url_rule("/market_trans_bought", 'get_market_trans_bought',
-                                    self.get_market_trans_bought, methods=["GET"])
-
-        self.blueprint.add_url_rule("/market_trans_sold", 'get_market_trans_sold',
-                                    self.get_market_trans_sold, methods=["GET"])
-
-        self.blueprint.add_url_rule("/crawl_stock_price_data", 'crawl_stock_price_data',
-                                    self.crawl_stock_price_data, methods=["POST"])
+        self.blueprint.add_url_rule("/market_trans", 'get_market_trans',
+                                    self.get_market_trans, methods=["GET"])
 
     def dowload_file_stock_price(self):
-        interval = int(request.args.get("period", 5))
-        type_file = str(request.args.get("type-file", json))
-        resonponse, status_code = self.stock_controllers.dowload_stock_info(interval,
-                                                                            type_file)
-        return jsonify(resonponse), status_code
+        request_args = request.args
+        resonponse, status_code = self.stock_controllers.dowload_stock_info(request_args
+                                                                            )
+        return resonponse, status_code
 
     def get_stock_info(self):
-        interval = int(request.args.get("period", 5))
+        request_args = request.args
+        resonponse, status_code = self.stock_controllers.get_stock_price_by_period(request_args
+                                                                                   )
+        return resonponse, status_code
+
+    def get_book_orders(self):
+        taker_type = str(request.args.get("taker_type"))
         page = int(request.args.get("page", 1))
         limit = int(request.args.get("limit", 10))
-
-        cache_key = f"stock_data:{interval}:{page}:{limit}"
-        cached_data = self.redis_connect.get_from_cache(cache_key)
-        if cached_data:
-            resonponse = json.loads(cached_data)
-            status_code = 200
-        else:
-            resonponse, status_code = self.stock_controllers.stock_info(page,
-                                                                        limit,
-                                                                        interval)
-            self.redis_connect.add_to_cache(cache_key,
-                                            json.dumps(resonponse),
-                                            10)
+        resonponse, status_code = self.stock_controllers.get_book_orders_by_taker_type(page,
+                                                                                       limit,
+                                                                                       taker_type)
         return jsonify(resonponse), status_code
 
-    def get_book_orders_buy(self):
+    def get_market_trans(self):
+        taker_type = str(request.args.get("taker_type"))
         page = int(request.args.get("page", 1))
         limit = int(request.args.get("limit", 10))
-        resonponse, status_code = self.stock_controllers.book_orders_buy_info(page,
-                                                                              limit)
-        return jsonify(resonponse), status_code
-
-    def get_book_orders_sell(self):
-        page = int(request.args.get("page", 1))
-        limit = int(request.args.get("limit", 10))
-        resonponse, status_code = self.stock_controllers.book_orders_sell_info(page,
-                                                                               limit)
-        return jsonify(resonponse), status_code
-
-    def get_market_trans_bought(self):
-        page = int(request.args.get("page", 1))
-        limit = int(request.args.get("limit", 10))
-        resonponse, status_code = self.stock_controllers.market_trans_bought_info(page,
-                                                                                  limit)
-        return jsonify(resonponse), status_code
-
-    def get_market_trans_sold(self):
-        page = int(request.args.get("page", 1))
-        limit = int(request.args.get("limit", 10))
-        resonponse, status_code = self.stock_controllers.market_trans_sold_info(page,
-                                                                                limit)
-        return jsonify(resonponse), status_code
-
-    def crawl_stock_price_data(self):
-        resonponse, status_code = self.crawl_stock_controllers.crawl_stock_price()
+        resonponse, status_code = self.stock_controllers.get_market_trans_by_taker_type(page,
+                                                                                        limit,
+                                                                                        taker_type)
         return jsonify(resonponse), status_code

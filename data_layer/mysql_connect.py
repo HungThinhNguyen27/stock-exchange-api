@@ -13,6 +13,7 @@ MYSQL_DB = Config.MYSQL_DB
 MYSQL_PORT = Config.MYSQL_PORT
 Base = sqlalchemy.orm.declarative_base()
 # 3306
+# mysql
 
 
 class MySqlConnect:

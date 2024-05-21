@@ -4,7 +4,7 @@ import yaml
 
 
 class Config(object):
-    with open("config.yaml", 'r') as stream:
+    with open(os.path.join(os.path.dirname(__file__), "config.yaml"), 'r') as stream:
         config = yaml.safe_load(stream)
 
     SECRET_KEY = config['KEY']

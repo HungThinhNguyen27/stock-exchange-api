@@ -31,5 +31,5 @@ class JwtAuthentication:
                 except jwt.InvalidTokenError:
                     return jsonify({"message": "Token invalid"}), 401
             else:
-                return jsonify({"error": "No token provided"}), 400
+                return jsonify({"error": "No token provided"}), 403
         return decorated

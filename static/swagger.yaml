@@ -4,7 +4,12 @@ info:
   description: |-
     This project aims to collect stock data from the Tiki-Exchange website and provide APIs to display stock information as well as perform buy/sell transactions on the stock market. The main goal of the project is to create a flexible and powerful system for managing stock data and executing transactions efficiently.
 servers:
-  - url: http://127.0.0.1:5010
+  # - url: http://127.0.0.1:5010
+  #   description: Server running on Docker
+  - url: http://127.0.0.1:5001
+    description: Server running on Localhost
+  # - url: http://192.168.1.11:5001
+  #   description: Internal network server
 tags:
   - name: Users
     description: Operations about user login/register
@@ -279,7 +284,9 @@ paths:
               default: json
         responses:
           200:
-            description: Successful response
+            description: Download file successfully
+          400: 
+            description: Bad request. Invalid parameters.
             content:
               application/json:
                 schema:
@@ -287,13 +294,14 @@ paths:
                   properties:
                     status: 
                       type: string
-                      example: {"status": "download file stock_info_60min.json success"}
+                      example: {"status": "Please choose type-file as json or csv !."}
 
-  /book-orders-buy:
+
+  /book-orders:
       get:
         tags:
           - Stock
-        summary: Get book-orders-buy
+        summary: Get book-orders
         description: Retrieve buy order information
         parameters:
           - name: page
@@ -303,6 +311,19 @@ paths:
             schema:
               type: integer
               default: 1
+          - name: limit
+            in: query
+            description: limit for pagination
+            required: false
+            schema:
+              type: integer
+              default: 10
+          - name: taker_type
+            in: query
+            description: taker_type (buy or sell)
+            required: false
+            schema:
+              type: string
         responses:
           200:
             description: Successful response
@@ -328,115 +349,11 @@ paths:
           404:
             description: This page does not exist
 
-
-
-  /book-orders-sell:
+  /market_trans:
       get:
         tags:
           - Stock
-        summary: Get book-orders-sell
-        description: Retrieve sell order information
-        parameters:
-          - name: page
-            in: query
-            description: Page number for pagination
-            required: false
-            schema:
-              type: integer
-              default: 1
-        responses:
-          200:
-            description: Successful response
-            content:
-              application/json:
-                schema:
-                  type: object
-                  properties:
-                    metadata: 
-                      type: string
-                      example: {
-                                "page_number": 1,
-                                "total_pages": 1
-                            }
-                    book_order_data: 
-                      type: string
-                      example: [
-                              {
-                                  "price": 27,
-                                  "total_asa": 2704
-                              }
-                          ]
-          404:
-            description: This page does not exist
-            
-  /market_trans_bought:
-      get:
-        tags:
-          - Stock
-        summary: Get market_trans_bought
-        description: Print out the history of purchased transactions
-        parameters:
-          - name: page
-            in: query
-            description: Page number for pagination
-            required: false
-            schema:
-              type: integer
-              default: 1
-        responses:
-          200:
-            description: Successful response
-            content:
-              application/json:
-                schema:
-                  type: object
-                  properties:
-                    metadata: 
-                      type: string
-                      example: {
-                                "page_number": 1,
-                                "total_pages": 3
-                            }
-                    nearest_price: 
-                      type: integer
-                      example: 27
-
-                    book_order_data: 
-                      type: string
-                      example: [
-                                {
-                                    "Taker_type": "bought",
-                                    "price": 27,
-                                    "quantity_astra": 296,
-                                    "transaction_date": "Mon, 18 Mar 2024 23:56:33 GMT"
-                                },
-                                {
-                                    "Taker_type": "bought",
-                                    "price": 20,
-                                    "quantity_astra": 5100,
-                                    "transaction_date": "Mon, 18 Mar 2024 23:56:33 GMT"
-                                },
-                                {
-                                    "Taker_type": "bought",
-                                    "price": 18,
-                                    "quantity_astra": 4000,
-                                    "transaction_date": "Tue, 12 Mar 2024 16:15:13 GMT"
-                                },
-                                {
-                                    "Taker_type": "bought",
-                                    "price": 18,
-                                    "quantity_astra": 2000,
-                                    "transaction_date": "Tue, 12 Mar 2024 16:07:45 GMT"
-                                }
-                            ]
-          404:
-            description: This page does not exist
-
-  /market_trans_sold:
-      get:
-        tags:
-          - Stock
-        summary: Get market_trans_bought
+        summary: Get market_trans
         description: Print out the history of sold transactions
         parameters:
           - name: page
@@ -446,6 +363,20 @@ paths:
             schema:
               type: integer
               default: 1
+          - name: limit
+            in: query
+            description: limit for pagination
+            required: false
+            schema:
+              type: integer
+              default: 10
+          - name: taker_type
+            in: query
+            description: taker_type (bought or sold)
+            required: false
+            schema:
+              type: string
+              default: bought
         responses:
           200:
             description: Successful response
@@ -467,51 +398,39 @@ paths:
                     book_order_data: 
                       type: string
                       example: [
-                            {
-                                "Taker_type": "sold",
-                                "price ": 20,
-                                "quantity_astra": 2850,
-                                "transaction_date": "Mon, 18 Mar 2024 23:56:33 GMT"
-                            },
-                            {
-                                "Taker_type": "sold",
-                                "price ": 20,
-                                "quantity_astra": 1250,
-                                "transaction_date": "Mon, 18 Mar 2024 23:56:33 GMT"
-                            },
-                            {
-                                "Taker_type": "sold",
-                                "price ": 20,
-                                "quantity_astra": 1000,
-                                "transaction_date": "Mon, 18 Mar 2024 23:56:33 GMT"
-                            },
-                            {
-                                "Taker_type": "sold",
-                                "price ": 27,
-                                "quantity_astra": 296,
-                                "transaction_date": "Mon, 18 Mar 2024 23:56:33 GMT"
-                            },
-                            {
-                                "Taker_type": "sold",
-                                "price ": 18,
-                                "quantity_astra": 4000,
-                                "transaction_date": "Tue, 12 Mar 2024 16:15:13 GMT"
-                            },
-                            {
-                                "Taker_type": "sold",
-                                "price ": 18,
-                                "quantity_astra": 2000,
-                                "transaction_date": "Tue, 12 Mar 2024 16:07:45 GMT"
-                            }
+                          {
+                              "price ": 24,
+                              "quantity_astra": 4,
+                              "taker_type": "bought",
+                              "transaction_date": "Tue, 14 May 2024 00:57:29 GMT"
+                          },
+                          {
+                              "price ": 24,
+                              "quantity_astra": 4,
+                              "taker_type": "bought",
+                              "transaction_date": "Tue, 14 May 2024 00:53:39 GMT"
+                          },
+                          {
+                              "price ": 24,
+                              "quantity_astra": 4,
+                              "taker_type": "bought",
+                              "transaction_date": "Tue, 14 May 2024 00:51:52 GMT"
+                          },
+                          {
+                              "price ": 24,
+                              "quantity_astra": 4,
+                              "taker_type": "bought",
+                              "transaction_date": "Tue, 14 May 2024 00:51:05 GMT"
+                          }
                         ]
           404:
             description: This page does not exist
-  /buy-now:
+  /transactions:
     post:
       tags:
         - Transaction
-      summary: Transaction buy now
-      description: Enter the amount of coins you want to use and the system will buy astra at the lowest price for you.
+      summary: Buy and sell transactions using operations such as limit or now
+      description: Enter the amount of coins if you want to buy now or enter the amount of astra if you want to sell now. Additionally, you can enter the number of coins and astra price to use buy limit or enter the amount of astra and astra price to use sell limit
       security:
         - BearerAuth: []
       requestBody:
@@ -521,11 +440,24 @@ paths:
             schema:
               type: object
               properties:
-                quantity_coin:
+                taker_type:
+                  description: Enter taker_type sell or buy
+                  type: string
+                  default: buy
+                type:
+                  description: Enter type as now or limit
+                  type: string
+                  default: now
+                astra_price: 
+                  description: Astra_price Default is 0 if you use type now
+                  type: integer
+                  default: 0
+                quantity:
+                  description: If you use transaction buy, enter quantity coins and conversely, transaction sell, enter quantity astra
                   type: integer
       responses:
         200:
-          description: Successful response
+          description: Transaction success
           content:
             application/json:
               schema:
@@ -558,187 +490,29 @@ paths:
                     example: null
                   message:
                     type: string
-                    example: Insufficient funds for the transaction..
+                    example: Insufficient funds for the transaction.
                   status:
                     type: string
                     example: error
-        401:
-          description: Unauthorized access
+              examples:
+                insufficient_funds:
+                  value:
+                    message: Insufficient funds for the transaction.
+                    status: error
+                    data: []
+                Incorrect format of taker_ type and type:
+                  value:
+                    message: Please enter taker_type as [buy or sell] and type as [now or limit]
+                    status: error
+                No quantity of (buy/sell) now:
+                  value:
+                    message: Please enter quantity
+                    status: error
+                No quantity and astra_price  of (buy/sell) limit:
+                  value:
+                    message: Please enter astra_price for type 'limit' and quantity 
+                    status: error
 
-  /sell-now:
-    post:
-      tags:
-        - Transaction
-      summary: Transaction sell now
-      description: Enter the amount of Astra you want to sell.
-      security:
-        - BearerAuth: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                quantity_asa:
-                  type: integer
-      responses:
-        200:
-          description: Successful response
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    type: string
-                    example: [{
-                              "asa_received": 37,
-                              "coin_spent": 1000,
-                              "price": 27,
-                              "timestamp": "Sun, 24 Mar 2024 17:08:33 GMT",
-                              "transaction": 1
-                          }]
-                  message:
-                    type: string
-                    example: Transaction completed successfully.
-                  status:
-                    type: string
-                    example: success
-        400:
-          description: failed transaction or not enough quantity coins. 
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    type: string
-                    example: null
-                  message:
-                    type: string
-                    example: Insufficient funds for the transaction..
-                  status:
-                    type: string
-                    example: error
-        401:
-          description: Unauthorized access
-
-  /buy-limit:
-    post:
-      tags:
-        - Transaction
-      summary: Transaction buy limit
-      description: Enter the amount of coins and price you want to buy astra.
-      security:
-        - BearerAuth: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                coins_quantity:
-                  type: integer
-                astra_price:
-                  type: integer
-      responses:
-        200:
-          description: Successful response
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    type: string
-                    example: {
-                            "Amount of Asa will receive": 50,
-                            "Astra Price": 20,
-                            "The number of Coins you used": 1000
-                        }
-                  message:
-                    type: string
-                    example: Transaction completed successfully.
-                  status:
-                    type: string
-                    example: success
-        400:
-          description: failed transaction or not enough quantity coins. 
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    type: string
-                    example: null
-                  message:
-                    type: string
-                    example: Insufficient funds for the transaction..
-                  status:
-                    type: string
-                    example: error
-        401:
-          description: Unauthorized access
-
-  /sell-limit:
-    post:
-      tags:
-        - Transaction
-      summary: Transaction sell limit
-      description: Enter the amount of coins and price you want to sell astra.
-      security:
-        - BearerAuth: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                asa_quantity:
-                  type: integer
-                astra_price:
-                  type: integer
-      responses:
-        200:
-          description: Successful response
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    type: string
-                    example: {
-                            "Amount of Coins will receive": 69000,
-                            "Astra Price": 23,
-                            "The number of Astra you used": 3000
-                        }
-                  message:
-                    type: string
-                    example: Transaction completed successfully.
-                  status:
-                    type: string
-                    example: success
-        400:
-          description: failed transaction or not enough quantity coins. 
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    type: string
-                    example: null
-                  message:
-                    type: string
-                    example: Insufficient funds for the transaction..
-                  status:
-                    type: string
-                    example: error
         401:
           description: Unauthorized access
 

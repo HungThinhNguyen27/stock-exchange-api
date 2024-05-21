@@ -42,11 +42,53 @@ services:
     networks:
       - stock-exchange-apis-networks
 
+  webserver:
+    image: apache/airflow:latest
+    restart: always
+    depends_on:
+        - mysql
+    environment:
+        - LOAD_EX=n
+        - EXECUTOR=Local
+    volumes:
+        - ./airflow:/opt/airflow
+        - ./airflow/logs:/opt/airflow/logs
+    ports:
+        - "8080:8080"
+    command: >
+      bash -c "airflow db init && 
+               airflow users create --username admin --password admin --firstname First --lastname Last --role Admin --email admin@example.com && 
+               airflow webserver"
+    healthcheck:
+        test: ["CMD-SHELL", "[ -f /usr/local/airflow/airflow-webserver.pid ]"]
+        interval: 30s
+        timeout: 30s
+        retries: 3
+    networks:
+      - stock-exchange-apis-networks
+
+  scheduler:
+    image: apache/airflow:latest
+    restart: always
+    depends_on:
+        - mysql
+    environment:
+        - LOAD_EX=n
+        - EXECUTOR=Local
+    volumes:
+        - ./airflow:/opt/airflow
+        - ./airflow/logs:/opt/airflow/logs
+    command: bash -c "airflow db init && airflow webserver && airflow scheduler"
+    networks:
+      - stock-exchange-apis-networks
+
 networks:
   stock-exchange-apis-networks:
     name:  stock-exchange-apis-networks
     driver: bridge
     external: true
+
+
 
 # docker-compose --env-file config.yaml up --detach
 # docker-compose stop stock-echange

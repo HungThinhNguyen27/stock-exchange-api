@@ -20,30 +20,12 @@ class BookOrdersDL(MySqlConnect):
     def get_by_user_id(self, id):
         return self.session.query(BookOrders).filter_by(user_id=id).first()
 
-    def get_book_order_id_by_min_price(self, price):
-
-        results = (
-            self.session.query(BookOrders.book_order_id)
-            .filter(BookOrders.taker_type == 'sell')
-            .filter(BookOrders.price_coins == price)
-            .order_by(BookOrders.price_coins.asc())
-        )
-        book_order_ids = [item[0] for item in results]
-        return book_order_ids
-
-    def get_book_order_id_by_highest_price(self, price):
-
-        results = (
-            self.session.query(BookOrders.book_order_id)
-            .filter(BookOrders.taker_type == 'buy')
-            .filter(BookOrders.price_coins == price)
-            .order_by(BookOrders.price_coins.desc())
-        )
-        book_order_ids = [item[0] for item in results]
-        return book_order_ids
-
-    def get_lowest_price_sell(self):
-        lowest_price_info = (
+    def get_price(self, taker_type):
+        if taker_type == 'buy':
+            order_by_clause = BookOrders.price_coins.desc()
+        else:
+            order_by_clause = BookOrders.price_coins.asc()
+        price_info = (
             self.session.query(
                 BookOrders.price_coins,
                 func.sum(BookOrders.amount_asa),
@@ -51,69 +33,38 @@ class BookOrdersDL(MySqlConnect):
                     distinct(BookOrders.user_id)).label('user_ids'),
 
             )
-            .filter(BookOrders.taker_type == "sell")
+            .filter(BookOrders.taker_type == taker_type)
             .group_by(BookOrders.price_coins)
-            .order_by(asc(BookOrders.price_coins))
+            .order_by(order_by_clause)
             .first()
         )
-        price, quantity_asaa, seller_id = lowest_price_info
-        min_price = int(price)
-        quantity_asa = int(quantity_asaa)
-        seller_id_list = [int(seller_id)
-                          for seller_id in seller_id.split(',') if seller_id]
-        return [(min_price, seller_id_list, quantity_asa)]
-
-        # return lowest_price_data
-
-    def get_highest_price_buy(self):
-        highest_price_info = (
-            self.session.query(
-                BookOrders.price_coins,
-                func.sum(BookOrders.amount_asa),
-                func.group_concat(
-                    distinct(BookOrders.user_id)).label('user_ids'),
-
-            )
-            .filter(BookOrders.taker_type == "buy")
-            .group_by(BookOrders.price_coins)
-            .order_by(desc(BookOrders.price_coins))
-            .first()
-        )
-        price, quantity_asaa, buyer_id = highest_price_info
+        price, quantity_asaa, user_ids = price_info
         highest_price = int(price)
         quantity_asa = int(quantity_asaa)
-        buyer_id_list = [int(seller_id)
-                         for seller_id in buyer_id.split(',') if seller_id]
-        return [(highest_price, buyer_id_list, quantity_asa)]
+        user_id_list = [int(seller_id)
+                        for seller_id in user_ids.split(',') if seller_id]
+        return [(highest_price, user_id_list, quantity_asa)]
 
-    def get_book_order_id_by_min_price(self, price):
-
-        results = (
-            self.session.query(BookOrders.book_order_id)
-            .filter(BookOrders.taker_type == 'sell')
-            .filter(BookOrders.price_coins == price)
-            .order_by(BookOrders.price_coins.asc())
-        )
-        book_order_ids = [item[0] for item in results]
-        return book_order_ids
-
-    def get_book_order_id_by_highest_price(self, price):
+    def get_book_order_id_by_price(self, price, taker_type):
+        if taker_type == 'buy':
+            order_by_clause = BookOrders.price_coins.asc()
+        else:
+            order_by_clause = BookOrders.price_coins.desc()
 
         results = (
             self.session.query(BookOrders.book_order_id)
-            .filter(BookOrders.taker_type == 'buy')
+            .filter(BookOrders.taker_type == taker_type)
             .filter(BookOrders.price_coins == price)
-            .order_by(BookOrders.price_coins.desc())
+            .order_by(order_by_clause)
         )
         book_order_ids = [item[0] for item in results]
         return book_order_ids
 
     def get_earliest_user_id_and_asa_by_price(self, price, seller_id_list, taker_type):
 
-        earliest_date_subq = self.session.query(
-            func.min(BookOrders.created_at).label('earliest_date')
-        ).filter(
-            BookOrders.price_coins == price
+        subquery = self.session.query(func.min(BookOrders.created_at)).filter(
+            BookOrders.price_coins == price,
+            BookOrders.taker_type == taker_type
         ).subquery()
 
         earliest_sellers = self.session.query(
@@ -123,43 +74,26 @@ class BookOrdersDL(MySqlConnect):
             BookOrders.user_id.in_(seller_id_list),
             BookOrders.price_coins == price,
             BookOrders.taker_type == taker_type,
-            BookOrders.created_at == earliest_date_subq.c.earliest_date
+            BookOrders.created_at.in_(subquery)
         ).order_by(
-            BookOrders.user_id
-        ).all()
+            BookOrders.user_id).all()
 
-        user_list = [(user_id, amount_asa)
-                     for user_id, amount_asa in earliest_sellers]
-        return user_list
+        result = [(user_id, amount_asa)
+                  for user_id, amount_asa in earliest_sellers]
+        return result
 
-    def get_seller_ids_and_asa_by_min_price(self, min_price):
+    def get_user_ids_and_asa_by_min_price(self, min_price, taker_type):
 
-        earliest_sellers = self.session.query(
+        earliest_users = self.session.query(
             BookOrders.user_id,
             BookOrders.amount_asa
         ).filter(
             BookOrders.price_coins == min_price,
-            BookOrders.taker_type == 'sell'
+            BookOrders.taker_type == taker_type
         ).all()
 
         user_list = [(user_id, amount_asa)
-                     for (user_id, amount_asa) in earliest_sellers]
-
-        return user_list
-
-    def get_buyer_ids_and_asa_by_highest_price(self, highest_price):
-
-        # Lấy user_id của những người bán có giá thấp nhất
-        earliest_sellers = self.session.query(
-            BookOrders.user_id,
-            BookOrders.amount_asa
-        ).filter(
-            BookOrders.price_coins == highest_price,
-            BookOrders.taker_type == 'buy'
-        ).all()
-
-        user_list = [(user_id, amount_asa)
-                     for (user_id, amount_asa) in earliest_sellers]
+                     for (user_id, amount_asa) in earliest_users]
 
         return user_list
 
@@ -202,62 +136,44 @@ class BookOrdersDL(MySqlConnect):
                 .filter(BookOrders.taker_type == taker_type)
                 .scalar())
 
-    def add_record_book_orders(self, user_id, price, amount_asa, total_coins, taker_type):
-        market = "asa"
-        self.session.add(BookOrders(
-            user_id=user_id,
-            price_coins=price,
-            amount_asa=amount_asa,
-            total_coins=total_coins,
-            market=market,
-            created_at=datetime.now(),
-            taker_type=taker_type
-        )
-        )
+    def add_record_book_orders(self, user_id, price, total_coins, amount_asa, taker_type):
+        market = "astra"
+        if taker_type == "sell":
+            self.session.add(BookOrders(
+                user_id=user_id,
+                price_coins=price,
+                amount_asa=amount_asa,
+                total_coins=total_coins,
+                market=market,
+                created_at=datetime.now(),
+                taker_type=taker_type))
+        else:
+            self.session.add(BookOrders(
+                user_id=user_id,
+                price_coins=price,
+                amount_asa=total_coins,
+                total_coins=amount_asa,
+                market=market,
+                created_at=datetime.now(),
+                taker_type=taker_type))
         self.session.commit()
 
-    def delete_book_order_by_min_price(self, min_price):
-        book_order_id_list = self.get_book_order_id_by_min_price(min_price
-                                                                 )
+    def delete_book_order_by_price(self, price, taker_type):
+        book_order_id_list = self.get_book_order_id_by_price(price,
+                                                             taker_type)
         for book_order_id in book_order_id_list:
             book_order = self.get_by_id(book_order_id)
             if book_order:
                 self.session.delete(book_order)
         self.session.commit()
 
-    def delete_book_order_by_highest_price(self, highest_price):
-        book_order_id_list = self.get_book_order_id_by_highest_price(highest_price
-                                                                     )
-        for book_order_id in book_order_id_list:
-            book_order = self.get_by_id(book_order_id)
-            if book_order:
-                self.session.delete(book_order)
-        self.session.commit()
+    def update_minus_astra_by_min_price(self, price, asa_spent, taker_type):
+        print("taker_type", taker_type)
+        print("price", price)
 
-    def update_minus_astra_by_min_price(self, min_price, asa_spent):
-
-        book_order_id_list = self.get_book_order_id_by_min_price(min_price
-                                                                 )
-        remaining_asa = asa_spent
-
-        while remaining_asa > 0 and book_order_id_list:
-            earliest_book_order_id = self.get_book_order_earliest(book_order_id_list)[0
-                                                                                      ]
-            book_order = self.get_by_id(earliest_book_order_id)
-
-            if remaining_asa >= book_order.amount_asa:
-                remaining_asa -= book_order.amount_asa
-                self.session.delete(book_order)
-                book_order_id_list.remove(earliest_book_order_id)
-            else:
-                book_order.amount_asa -= remaining_asa
-                remaining_asa = 0
-
-        self.session.commit()
-
-    def update_by_highest_price(self, highest_price, asa_spent):
-        book_order_id_list = self.get_book_order_id_by_highest_price(highest_price
-                                                                     )
+        book_order_id_list = self.get_book_order_id_by_price(price,
+                                                             taker_type)
+        print("book_order_id_list", book_order_id_list)
         remaining_asa = asa_spent
 
         while remaining_asa > 0 and book_order_id_list:
@@ -277,5 +193,5 @@ class BookOrdersDL(MySqlConnect):
 
 
 # a = BookOrdersDL()
-# b = a.get_buyer_ids_and_asa_by_highest_price(29)
+# b = a.get_earliest_user_id_and_asa_by_price(20, [1], 'buy')
 # print(b)

@@ -1,6 +1,6 @@
 from data_layer.table.user import UserData
-from data_layer.transaction.buy import BuyTransaction
-from data_layer.transaction.sell import SellTransaction
+
+from data_layer.exchange import Exchange
 
 
 from model.users import User
@@ -14,8 +14,6 @@ class UserService:
     def __init__(self) -> None:
         self.user_data_layer = UserData()
         self.account_utils = Account()
-        self.buy_transaction = BuyTransaction()
-        self.sell_transaction = SellTransaction()
 
     def create_user(self, user_info):
         users = self.user_data_layer.get()
@@ -59,42 +57,34 @@ class UserService:
                 access_token_payload)
         return access_token
 
-    def buy_stock_now(self, current_user, quantity_coin):
-
-        transaction_process = self.buy_transaction.buy_now_trans(current_user,
-                                                                 quantity_coin)
-        return transaction_process
-
-    def buy_stock_limit(self, current_user, astra_price, coins_quantity):
-
-        transaction_process = self.buy_transaction.buy_limit_trans(current_user,
-                                                                   astra_price,
-                                                                   coins_quantity)
-        return transaction_process
-
-    def sell_stock_now(self, current_user, quantity_asa):
-
-        transaction_process = self.sell_transaction.sell_now_trans(current_user,
-                                                                   quantity_asa)
-        return transaction_process
-
-    def sell_stock_limit(self, current_user, astra_price, asa_quantity):
-
-        transaction_process = self.sell_transaction.sell_limit_trans(current_user,
-                                                                     astra_price,
-                                                                     asa_quantity)
-        return transaction_process
-
-    def check_balance(self, current_user, quantity_coin):
-        quantity_coin_value = int(quantity_coin[0])
-        get_balance_account = self.user_data_layer.get_asa(current_user
-                                                           )
-
-        if get_balance_account >= quantity_coin_value:
-            return get_balance_account
-        else:
-            return None
-
-    def get_account(self, user_name):
+    def get_account_by_username(self, user_name):
         account = self.user_data_layer.get_by_name(user_name)
         return account
+
+    def create_transaction_now(self, user_name, value, taker_type):
+
+        # Get user by name
+        user = self.user_data_layer.get_by_name(user_name)
+        if not self.account_utils.check_balance_account(user, value, taker_type):
+            return None
+        # Perform transaction
+        exchange_instance = Exchange(user.user_id,
+                                     value,
+                                     0,
+                                     taker_type)
+
+        return exchange_instance.transaction_now()
+
+    def create_transaction_limit(self, user_name, astra_price, value, taker_type):
+
+        # Get user by name
+        user = self.user_data_layer.get_by_name(user_name)
+        # Check user balance
+        if not self.account_utils.check_balance_account(user, value, taker_type):
+            return None
+        # Perform transaction
+        exchange_instance = Exchange(user.user_id,
+                                     value,
+                                     astra_price,
+                                     taker_type)
+        return exchange_instance.transaction_limit()

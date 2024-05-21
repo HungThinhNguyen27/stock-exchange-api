@@ -19,3 +19,10 @@ class Account:
     def generate_tokens(self, payload):
         return jwt.encode(
             payload, Config.SECRET_KEY, algorithm="HS256")
+
+    def check_balance_account(self, user, value, taker_type):  # đưa lên services
+        if taker_type == 'buy' and user.quantity_coin >= value:
+            return True
+        elif taker_type == 'sell' and user.quantity_astra >= value:
+            return True
+        return False
