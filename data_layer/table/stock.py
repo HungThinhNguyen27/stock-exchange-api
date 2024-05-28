@@ -1,4 +1,5 @@
 
+from sqlalchemy import func, select
 from model.stock import StockPrice
 from typing import List
 from data_layer.mysql_connect import MySqlConnect
@@ -154,8 +155,6 @@ class StockPriceDL(MySqlConnect):
         return results
 
 
-# a = StockPriceDL()
-# all = a.get()
 # b = [ts.time_stamp for ts in all]
 # limited_time_stamps_list = a.get_stock_data_by_period(60, b)
 # # # latest_record = a.get_stock_data(60, limited_time_stamps_list.limited_time_stamps)
