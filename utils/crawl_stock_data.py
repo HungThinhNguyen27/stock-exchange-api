@@ -25,11 +25,6 @@ class CrawlData:
 
         url = "https://api.tiki.vn/rally/markets/asaxu/klines"
 
-        # current_date = datetime(2021, 4, 1, tzinfo=timezone.utc)
-        # current_timestamp = int(current_date.timestamp())
-        # start_date = current_date - timedelta(days=1)
-        # start_timestamp = int(start_date.timestamp())
-
         headers = {
             'Accept': 'application/json, text/plain, */*',
             'Accept-Encoding': 'gzip, deflate, br',

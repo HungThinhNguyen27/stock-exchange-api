@@ -95,28 +95,3 @@ class StockService:
         next_page_url, total_pages = self.stock_utils.page_param(
             price_list_count, page, limit)
         return next_page_url, total_pages
-
-
-class CrawlDataStockService:
-
-    def __init__(self) -> None:
-        self.stock_data_layers = StockPriceDL()
-        self.crawl_data = CrawlData()
-
-    def crawl_stock_price_data(self):
-        data_dict = self.crawl_data.crawl_stock_price()
-        for record in data_dict:
-            stock_entity = StockPrice(
-                time_stamp=record.get('time_stamp'),
-                open_price=record.get('open_price'),
-                close_price=record.get('close_price'),
-                high_price=record.get('high_price'),
-                low_price=record.get('low_price'),
-                volume=record.get('volume'),
-            )
-            self.stock_data_layers.add(stock_entity)
-            print(record)
-
-
-a = CrawlDataStockService()
-b = a.crawl_stock_price_data()

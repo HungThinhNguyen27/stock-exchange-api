@@ -1,4 +1,4 @@
-from services.stock import StockService, CrawlDataStockService
+from services.stock import StockService
 from flask import request, jsonify
 from typing import List
 import json

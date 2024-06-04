@@ -19,7 +19,7 @@ Base = sqlalchemy.orm.declarative_base()
 class MySqlConnect:
     def __init__(self):
         self.engine = create_engine(
-            f"mysql+mysqlconnector://{MYSQL_USER}:{MYSQL_PASSWORD}@{MYSQL_HOST}:{MYSQL_PORT}/{MYSQL_DB}",
+            f"mysql+mysqlconnector://{MYSQL_USER}:{MYSQL_PASSWORD}@mysql:3306/{MYSQL_DB}",
             echo=False,
             isolation_level="READ COMMITTED"
         )
