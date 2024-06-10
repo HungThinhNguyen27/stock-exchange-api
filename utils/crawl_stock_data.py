@@ -16,12 +16,18 @@ class CrawlData:
     def api_constant(self):
 
         period = "1"
-        current_date = datetime.utcnow()
+        utc_now = datetime.now(pytz.utc)
+        vietnam_tz = pytz.timezone('Asia/Ho_Chi_Minh')
+        current_date = utc_now.astimezone(vietnam_tz)
         current_timestamp = int(current_date.timestamp())
 
-        latest_record = self.latest_stock_record()
-        start_date = latest_record + timedelta(minutes=1)
+
+        start_date = datetime(2023, 5, 1, tzinfo=timezone.utc)
         start_timestamp = int(start_date.timestamp())
+
+        # latest_record = self.latest_stock_record()
+        # start_date = latest_record + timedelta(minutes=1)
+        # start_timestamp = int(start_date.timestamp())
 
         url = "https://api.tiki.vn/rally/markets/asaxu/klines"
 

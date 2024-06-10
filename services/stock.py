@@ -31,7 +31,7 @@ class StockService:
         else:
             stock_list = self.stock_data_layers.get()
             all_time_stamp = [stock.time_stamp for stock in stock_list]
-            stock_list_period = self.stock_data_layers.get_stock_data_by_period(period,
+            stock_list_period = self.stock_data_layers.get_by_period_and_limit(period,
                                                                                 all_time_stamp)
             file_data = self.stock_utils.format_data(stock_list_period)
             self.redis_connect.add_to_cache(
@@ -49,22 +49,19 @@ class StockService:
             - page (int): Page number.
             - limit (int): Number of items per page.
         """
-
-        # offset = (page - 1) * limit
-        limited_time_stamps_list = self.stock_data_layers.get_limited_time_stamps_by_period(period,
-                                                                                            limit,
-                                                                                            page)
-
-        stock_list = self.stock_data_layers.get_stock_data_by_period(period,
-                                                                     limited_time_stamps_list)
+        stock_list = self.stock_data_layers.get_by_period_and_limit(period,
+                                                                     limit,
+                                                                     page)
 
         stock_count = self.stock_data_layers.calculate_count(period)
-
         formatted_stock_list = self.stock_utils.format_data(stock_list)
 
         total_pages = (stock_count + limit - 1) // limit
 
         return formatted_stock_list, total_pages
+
+
+
 
     def get_market_transaction(self, page, limit):
 

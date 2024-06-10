@@ -13,14 +13,14 @@ services:
       - "${MYSQL_PORT}:3306"
     expose:
       - 3306
-    volumes:
-      - ./mysql_data:/var/lib/mysql
+    # volumes:
+    #   - ./mysql_data:/var/lib/mysql
     networks:
       - stock-exchange-apis-networks
 
   stock-echange:
     build: 
-        context: ../PROJECTS
+        context: ../stock-exchange-api
         dockerfile: Dockerfile
     container_name: stock-exchange
     restart: unless-stopped 
@@ -31,8 +31,8 @@ services:
       - REDIS_HOST=redis
     ports:
       - ${STOCK_EXCHANGE_PORT}:5000
-    volumes:
-        - ./data_file:/app/data
+    # volumes:
+    #     - ./data_file:/app/data
     networks:
       - stock-exchange-apis-networks
 
@@ -43,46 +43,6 @@ services:
       - "${REDIS_PORT}:6379"
     networks:
       - stock-exchange-apis-networks
-
-  # webserver:
-  #   image: apache/airflow:latest
-  #   restart: always
-  #   depends_on:
-  #       - mysql
-  #   environment:
-  #       - LOAD_EX=n
-  #       - EXECUTOR=Local
-  #   volumes:
-  #       - ./airflow:/opt/airflow
-  #       - ./airflow/logs:/opt/airflow/logs
-  #   ports:
-  #       - "8080:8080"
-  #   command: >
-  #     bash -c "airflow db init && 
-  #              airflow users create --username admin --password admin --firstname First --lastname Last --role Admin --email admin@example.com && 
-  #              airflow webserver"
-  #   healthcheck:
-  #       test: ["CMD-SHELL", "[ -f /usr/local/airflow/airflow-webserver.pid ]"]
-  #       interval: 30s
-  #       timeout: 30s
-  #       retries: 3
-  #   networks:
-  #     - stock-exchange-apis-networks
-
-  # scheduler:
-  #   image: apache/airflow:latest
-  #   restart: always
-  #   depends_on:
-  #       - mysql
-  #   environment:
-  #       - LOAD_EX=n
-  #       - EXECUTOR=Local
-  #   volumes:
-  #       - ./airflow:/opt/airflow
-  #       - ./airflow/logs:/opt/airflow/logs
-  #   command: bash -c "airflow db init && airflow webserver && airflow scheduler"
-    # networks:
-    #   - stock-exchange-apis-networks
 
 networks:
   stock-exchange-apis-networks:

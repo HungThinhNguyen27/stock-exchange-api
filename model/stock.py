@@ -18,7 +18,7 @@ from data_layer.mysql_connect import Base
 class StockPrice(Base):
 
     """ Class representing Stock Price table. """
-    __tablename__ = "stock_price"
+    __tablename__ = "stock_price_new"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     time_stamp = Column(DateTime, nullable=False)

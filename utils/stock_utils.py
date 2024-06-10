@@ -45,18 +45,32 @@ class StockUtils:
             )
         return next_page_url, total_pages
 
+    # def format_data(self, records):
+    #     stock_data = []
+    #     for record in records:
+    #         minutes = int(float(record[2]))
+    #         datetime_string = f"{record[0].strftime('%Y-%m-%d')} {str(record[1]).zfill(2)}:{str(minutes).zfill(2)}"
+    #         stock_dict = {
+    #             "time_stamp": datetime_string,
+    #             "open_price": record[3],
+    #             "close_price": record[4],
+    #             "high_price": record[5],
+    #             "low_price": record[6],
+    #             "volume": int(record[7])
+    #         }
+    #         stock_data.append(stock_dict)
+    #     return stock_data
+
     def format_data(self, records):
         stock_data = []
         for record in records:
-            minutes = int(float(record[2]))
-            datetime_string = f"{record[0].strftime('%Y-%m-%d')} {str(record[1]).zfill(2)}:{str(minutes).zfill(2)}"
             stock_dict = {
-                "time_stamp": datetime_string,
-                "open_price": record[3],
-                "close_price": record[4],
-                "high_price": record[5],
-                "low_price": record[6],
-                "volume": int(record[7])
+                "time_stamp": record.first_time_stamp.strftime("%Y-%m-%d %H:%M:%S"),
+                "open_price": record.first_open_price,
+                "close_price": record.last_close_price,
+                "high_price": record.high_price,
+                "low_price": record.low_price,
+                "volume": int(record.volume)
             }
             stock_data.append(stock_dict)
         return stock_data

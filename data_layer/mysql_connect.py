@@ -12,14 +12,15 @@ MYSQL_PASSWORD = Config.MYSQL_PASSWORD
 MYSQL_DB = Config.MYSQL_DB
 MYSQL_PORT = Config.MYSQL_PORT
 Base = sqlalchemy.orm.declarative_base()
-# 3306
-# mysql
+
+port = 3306
+host = "mysql"
 
 
 class MySqlConnect:
     def __init__(self):
         self.engine = create_engine(
-            f"mysql+mysqlconnector://{MYSQL_USER}:{MYSQL_PASSWORD}@mysql:3306/{MYSQL_DB}",
+            f"mysql+mysqlconnector://{MYSQL_USER}:{MYSQL_PASSWORD}@{MYSQL_HOST}:{MYSQL_PORT}/{MYSQL_DB}",
             echo=False,
             isolation_level="READ COMMITTED"
         )

@@ -14,7 +14,7 @@ class RedisConnect:
     def add_to_cache(self, key, value, expire):
         self.redis_cache.set(key, value, ex=expire)
 
-    def get_from_cache(self, key):
+    def get_from_cache(self, key):  
         value = self.redis_cache.get(key)
         if value is None:
             return None
