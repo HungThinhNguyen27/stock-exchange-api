@@ -18,14 +18,12 @@ app.register_blueprint(swaggerui_blueprint, url_prefix=SWAGGER_URL)
 
 @app.errorhandler(404)
 def page_not_found(e):
-    # Gửi logs vào Slack khi user truy cập vào resource không tồn tại
     message = f"404 Error: {request.url} does not exist."
     send_slack_notification(message)
     return jsonify({"error": "Resource not found"}), 404
 
 @app.errorhandler(Exception)
 def handle_exception(e):
-    # Gửi logs vào Slack khi server gặp lỗi hoặc sập
     trace = traceback.format_exc()
     message = f"Internal Server Error: {str(e)}\n{trace}"
     send_slack_notification(message)
@@ -40,4 +38,4 @@ if __name__ == '__main__':
         send_slack_notification(f"Server started failed with Error: {e}")
 
 
-# source /Users/lap01743/Downloads/WorkSpace/stock-exchange-api/env/bin/activate
+# source /Users/lap01743/Desktop/WorkSpace/stock-exchange-api/env/bin/activate

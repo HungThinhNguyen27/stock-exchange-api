@@ -43,3 +43,4 @@ if __name__ == '__main__':
 # PYTHONPATH=/Users/macos/Projects:/Users/macos/Projects/data_layer:/Users/macos/Projects/model:/Users/macos/Projects/utils:/Users/macos/Projects/config.yaml
 # * * * * * /opt/homebrew/bin/python3.11 /Users/macos/Projects/cron_jobs/crawl_data.py >> /Users/macos/Projects/cron_jobs/crawl_log.log 2>&1
 # * * * * * /opt/homebrew/bin/python3.11 /Users/macos/Projects/cron_jobs/crawl_data.py
+z
