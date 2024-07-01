@@ -613,3 +613,14 @@
 2024-07-02 02:37:00,040 - INFO - Record: {'time_stamp': '2024-07-02 02:35', 'open_price': 37, 'close_price': 37, 'high_price': 37, 'low_price': 37, 'volume': 0}
 2024-07-02 02:38:00,313 - INFO - Record: {'time_stamp': '2024-07-02 02:36', 'open_price': 37, 'close_price': 37, 'high_price': 37, 'low_price': 37, 'volume': 0}
 2024-07-02 02:38:00,320 - INFO - Record: {'time_stamp': '2024-07-02 02:37', 'open_price': 37, 'close_price': 37, 'high_price': 37, 'low_price': 37, 'volume': 1040}
+2024-07-02 02:39:00,761 - INFO - Record: No data crawled
+2024-07-02 02:40:01,118 - INFO - Record: {'time_stamp': '2024-07-02 02:38', 'open_price': 37, 'close_price': 37, 'high_price': 37, 'low_price': 37, 'volume': 0}
+2024-07-02 02:40:01,127 - INFO - Record: {'time_stamp': '2024-07-02 02:39', 'open_price': 37, 'close_price': 37, 'high_price': 37, 'low_price': 37, 'volume': 0}
+2024-07-02 02:41:01,449 - INFO - Record: {'time_stamp': '2024-07-02 02:40', 'open_price': 37, 'close_price': 37, 'high_price': 37, 'low_price': 37, 'volume': 0}
+2024-07-02 02:42:01,782 - INFO - Record: {'time_stamp': '2024-07-02 02:41', 'open_price': 37, 'close_price': 37, 'high_price': 37, 'low_price': 37, 'volume': 0}
+2024-07-02 02:43:02,162 - INFO - Record: {'time_stamp': '2024-07-02 02:42', 'open_price': 37, 'close_price': 37, 'high_price': 37, 'low_price': 37, 'volume': 0}
+2024-07-02 02:44:03,351 - INFO - Record: {'time_stamp': '2024-07-02 02:43', 'open_price': 37, 'close_price': 37, 'high_price': 37, 'low_price': 37, 'volume': 0}
+2024-07-02 02:45:03,718 - INFO - Record: {'time_stamp': '2024-07-02 02:44', 'open_price': 37, 'close_price': 37, 'high_price': 37, 'low_price': 37, 'volume': 1040}
+2024-07-02 02:46:04,004 - INFO - Record: {'time_stamp': '2024-07-02 02:45', 'open_price': 37, 'close_price': 37, 'high_price': 37, 'low_price': 37, 'volume': 0}
+2024-07-02 02:47:04,373 - INFO - Record: {'time_stamp': '2024-07-02 02:46', 'open_price': 37, 'close_price': 37, 'high_price': 37, 'low_price': 37, 'volume': 0}
+2024-07-02 02:48:04,794 - INFO - Record: {'time_stamp': '2024-07-02 02:47', 'open_price': 37, 'close_price': 37, 'high_price': 37, 'low_price': 37, 'volume': 0}
