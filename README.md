@@ -1,73 +1,158 @@
 
 # Stock Exchange APIs
 
+## Table of Contents
+1. [Introduction](#1-introduction)
+2. [Technologies Used](#2-technologiesUsed)
+3. [Features](#3-features)
+4. [Installation](#4-installation)
+5. [Usage](#5-usage)
+6. [Configuration](#6-configuration)
+7. [Contact](#7-contact)
+
+## 1. Introduction
 This project aims to collect stock data from the Tiki-Exchange website and provide APIs to display stock information as well as perform buy/sell transactions on the stock market. The main goal of the project is to create a flexible and powerful system for managing stock data and executing transactions efficiently.
 
+## 2. Technologies Used
 
-## features: 
+- **Programming Language:** Python ![Python](https://img.shields.io/badge/python-3.12.0-blue)
+- **Web Framework:** Flask ![Flask](https://img.shields.io/badge/Flask-v2.0-green)
+- **Authentication:** JWT ![JWT](https://img.shields.io/badge/JWT-v2.2.0-blue)
+- **ORM:** SQLAlchemy ![SQLAlchemy](https://img.shields.io/badge/SQLAlchemy-v1.4-blue)
+- **Database:** MySQL ![MySQL](https://img.shields.io/badge/MySQL-v8.0-orange)
+- **Caching:** Redis ![Redis](https://img.shields.io/badge/Redis-v6.0-red)
+- **API Documentation:** Swagger ![Swagger](https://img.shields.io/badge/Swagger-v3.0-lightgrey)
+- **Containerization:** Docker ![Docker](https://img.shields.io/badge/Docker-v20.10-blue)
+- **Task Scheduler:** Airflow ![Airflow](https://img.shields.io/badge/Airflow-v2.0-yellow)
+- **Testing Framework:** Unit Testing ![Unit Testing](https://img.shields.io/badge/Unit%20Testing-pytest-green)
+- **Continuous Integration:** Jenkins ![Jenkins](https://img.shields.io/badge/Jenkins-v2.303.1-red)
+
+
+## 3. Features
 1. Crawl Data:
-the system automatically crawls stock data from the Tiki-Exchange website every day.
-Automated planning to ensure data updates over time.
 
-2. Restful APIs for stock data:
-Provide Restful APIs to display stock information collected from Tiki-Exchange.
-Includes endpoints for stock prices, buy/sell order books, and market transactions for stocks
+    - The system automatically collects stock data from the Tiki-Exchange website every minute. 
+
+    - We build this job on docker so that every time we start collecting, the system will load a record from the database with the most recent time and we add one minute to that record. it will be called start_date and current_date is the current time. at location(Asia/Ho_Chi_Minh).
+
+    - When crawling data from Tiki-Exchange, we need to have three parameters:
+        - period: The number of minutes.
+        - time_from: The start time.
+        - time_to: The end time.
+    - Example: 
+        -  The record from the database has the most recent time is '2024-07-02 01:23' .
+        - We add one minute to that record '2024-07-02 01:24'. it will be called Start_date
+        - Current_date is the end time like '2024-07-02 01:25'
+
+
+
+
+2. APIs for stock data:
+
+    - Provides stock indices with data collected from charts on the Tiki-Exchange site.
+
+    - Users enter parameters to view stock charts for each period. Data is collected in real-time, so we have tried to improve the candlestick chart display function in the best and fastest way.
+
+    - Includes endpoints for:
+        - order books
+        - Market transactions
+        - Candlestick chart display enhancement for optimal performance.
 
 
 3. APIs transactions Buy/Sell
-Provides trading APIs so users can make stock buy/sell transactions.
-Ensuring safety and authenticity during transactions.
+
+    - Provides robust APIs for executing buy and sell transactions in the stock market. 
+    - The system implements ACID (Atomicity, Consistency, Isolation, Durability) principles to ensure transactional integrity and data consistency throughout the process. In case of any transactional failures, the system automatically rolls back to maintain data integrity.
 
 4. Login & Authentication 
-Login APIs use JWT (JSON Web Token) to authenticate users.
 
-## Setup
-Clone the repository and move into it:
+    - Login APIs use JWT (JSON Web Token) to authenticate users.
 
-    git clone https://github.com/HungThinhNguyen27/stock-exchange-api.git
+## 4. Installation
+- Prerequisites
+    - Python >= 3.8
+    - Flask >= 2.0
 
-    cd stock-exchange-api
+    ### Setup
+- Clone the repository and move into it:
 
-Setup Python environment: 
+        git clone https://github.com/HungThinhNguyen27/stock-exchange-api.git
 
-    pip install -r requirements.txt
+        cd stock-exchange-api
 
-Run server on Localhost:
+- Set up virtual environment for stock-exchange-apis services : 
 
-    python3 app.py
+        python3.12 -m venv src/env #I'm using python version 3.12
 
-Run server on Docker:
+        source src/env/bin/activate
 
-    docker-compose --env-file config.yaml up --detach
+- Set up virtual environment for crawl-data services : 
+
+        python3.12 -m venv cron_jobs/env #I'm using python version 3.12
+
+        source cron_jobs/env/bin/activate
+
+        
+- Install the library into the virtual environment : 
+
+        pip install -r src/requirements.txt
+
+        pip install -r cron_jobs/requirements.txt         
+
     
-## Usage
+## 5. Usage
 
-1. The server on localhost has the URL:
-    http://127.0.0.1:5001
+- Run server on Localhost:
 
-2. The server on docker has the URL:
-    http://127.0.0.1:5010
+        python3 src/app.py
 
-3. Swagger UI interface for specific operations of APIs on Docker: 
-    http://172.20.10.5:5001/api/docs
+- Crawl-data on Localhost:
 
-## APIs Endpoints
+        python3 cron_jobs/crawl_data.py
 
-The following API endpoints are available:
+- Build all services on docker:
 
-    - GET /stock-candles: Retrieve a paginated list of stock price.
-    - GET /book-orders-buy: Get a paged list of book order buys in ascending order.
-    - GET /book-orders-sell: Get a paged list of book order sell in descending order.
-    - GET /market_trans_bought: Get a paged list of market transactions by most recent purchase.
-    - GET /market_trans_sold: Get a paged list of market transactions by most recent purchase.
+        docker-compose --env-file src/config.yaml up --detach
+    
+## 6. Configuration
 
-    - POST /account: Create account.
-    - POST /login: Use account to receive jwt token.
-    - PUT /buy-now": Use coins to buy asa quickly at the lowest price.
-    - PUT /sell-now": Use astra to sell asa quickly at the highest price.
-    - PUT /buy-limit": Use coins to buy astra at the desired price.
-    - PUT /sell-limit": Use astra to sell astra at the desired price.
+- Create src/config.yaml file, Then configure according to the following instructions:
 
+        # src/config.yaml, it is the configuration file of services stock-exchange-apis 
 
+        KEY: "this is SECRET_KEY" # Secret key used for securing sessions and cryptographic operations
+
+        # MySQL Database Configuration
+        MYSQL_HOST: "mysql"        # Hostname of the MySQL container within Docker network
+        MYSQL_PORT: 3306           # Port number of MySQL server (default is 3306)
+        MYSQL_USER: "root"         # Username for accessing MySQL database
+        MYSQL_PASSWORD: "password" # Password for the MySQL user
+        MYSQL_DB: "database_name"  # Name of the MySQL database to connect
+
+        # Port for Stock Exchange Service
+        STOCK_EXCHANGE_PORT: 5000  # Port number on which the stock exchange service will run
+
+        # Redis Configuration
+        REDIS_HOST: "redis"        # Hostname of the Redis container within Docker network
+        REDIS_PORT: 6379           # Port number of Redis server (default is 6379)
+
+        # Slack Integration Token
+        SLACK_TOKEN: "your_slack_token_here"  # Token for integrating with Slack API
+
+- Create cron_jobs/config.yaml file , Then configure according to the following instructions:
+
+        # cron_jobs/config.yaml, it is the configuration file of the data crawl function
+
+        MYSQL_HOST: "mysql"        # Hostname of the MySQL container within Docker network
+        MYSQL_PORT: 3306           # Port number of MySQL server (default is 3306)
+        MYSQL_USER: "root"         # Username for accessing MySQL database
+        MYSQL_PASSWORD: "password" # Password for the MySQL user
+        MYSQL_DB: "database_name"  # Name of the MySQL database to connect
+
+## 7. Contact
+
+- **Author**: Nguyen Hung Thinh
+
+- **Email**: thinhung4199@gmail.com
 
 
