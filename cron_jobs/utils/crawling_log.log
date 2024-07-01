@@ -624,3 +624,9 @@
 2024-07-02 02:46:04,004 - INFO - Record: {'time_stamp': '2024-07-02 02:45', 'open_price': 37, 'close_price': 37, 'high_price': 37, 'low_price': 37, 'volume': 0}
 2024-07-02 02:47:04,373 - INFO - Record: {'time_stamp': '2024-07-02 02:46', 'open_price': 37, 'close_price': 37, 'high_price': 37, 'low_price': 37, 'volume': 0}
 2024-07-02 02:48:04,794 - INFO - Record: {'time_stamp': '2024-07-02 02:47', 'open_price': 37, 'close_price': 37, 'high_price': 37, 'low_price': 37, 'volume': 0}
+2024-07-02 02:49:05,085 - INFO - Record: {'time_stamp': '2024-07-02 02:48', 'open_price': 37, 'close_price': 37, 'high_price': 37, 'low_price': 37, 'volume': 1040}
+2024-07-02 02:50:05,359 - INFO - Record: {'time_stamp': '2024-07-02 02:49', 'open_price': 37, 'close_price': 37, 'high_price': 37, 'low_price': 37, 'volume': 0}
+2024-07-02 02:51:05,690 - INFO - Record: {'time_stamp': '2024-07-02 02:50', 'open_price': 37, 'close_price': 37, 'high_price': 37, 'low_price': 37, 'volume': 0}
+2024-07-02 02:52:05,961 - INFO - Record: {'time_stamp': '2024-07-02 02:51', 'open_price': 37, 'close_price': 37, 'high_price': 37, 'low_price': 37, 'volume': 0}
+2024-07-02 02:53:06,274 - INFO - Record: {'time_stamp': '2024-07-02 02:52', 'open_price': 37, 'close_price': 37, 'high_price': 37, 'low_price': 37, 'volume': 0}
+2024-07-02 02:54:06,601 - INFO - Record: {'time_stamp': '2024-07-02 02:53', 'open_price': 37, 'close_price': 37, 'high_price': 37, 'low_price': 37, 'volume': 1040}

@@ -29,7 +29,7 @@ This project aims to collect stock data from the Tiki-Exchange website and provi
 
 
 ## 3. Features
-1. Crawl Data:
+1. **Crawl Data:**
 
     - The system automatically collects stock data from the Tiki-Exchange website every minute. 
 
@@ -47,7 +47,7 @@ This project aims to collect stock data from the Tiki-Exchange website and provi
 
 
 
-2. APIs for stock data:
+2. **APIs for stock data:**
 
     - Provides stock indices with data collected from charts on the Tiki-Exchange site.
 
@@ -59,14 +59,25 @@ This project aims to collect stock data from the Tiki-Exchange website and provi
         - Candlestick chart display enhancement for optimal performance.
 
 
-3. APIs transactions Buy/Sell
+3. **APIs transactions Buy/Sell**
 
     - Provides robust APIs for executing buy and sell transactions in the stock market. 
     - The system implements ACID (Atomicity, Consistency, Isolation, Durability) principles to ensure transactional integrity and data consistency throughout the process. In case of any transactional failures, the system automatically rolls back to maintain data integrity.
 
-4. Login & Authentication 
+4. **Login & Authentication**
 
     - Login APIs use JWT (JSON Web Token) to authenticate users.
+
+5. **Stock-exchange-api Services Send Errors to Slack**
+
+   - **Slack Integration:** Set up a Slack App or use a Slack Webhook URL to enable error notifications to a specific Slack channel.
+   
+   - **Configure Slack Token:** Integrate the Slack Token into the Docker environment variables. This can be done via Docker Compose or directly in the Dockerfile.
+   
+   - **Implement Error Handling:** Enhance the `stock-exchange-api` codebase to include error handling mechanisms. Implement a function or middleware to catch and log desired errors.
+   
+   - **Send Notifications:** Utilize the configured Slack Token to send notifications to the designated Slack channel when errors occur. Ensure the notifications provide sufficient information for prompt troubleshooting.
+
 
 ## 4. Installation
 - Prerequisites
