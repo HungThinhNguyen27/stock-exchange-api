@@ -11,7 +11,9 @@
 7. [Contact](#7-contact)
 
 ## 1. Introduction
-This project aims to collect stock data from the Tiki-Exchange website and provide APIs to display stock information as well as perform buy/sell transactions on the stock market. The main goal of the project is to create a flexible and powerful system for managing stock data and executing transactions efficiently.
+The Stock Exchange APIs project is designed to facilitate the retrieval and management of stock data from the Tiki-Exchange website, offering a comprehensive set of APIs for real-time stock information and transaction execution in the stock market. This endeavor aims to provide a robust and adaptable system capable of handling diverse stock trading needs efficiently.
+
+This project not only aims to streamline stock data management but also offers robust transaction capabilities adhering to ACID principles for data consistency and reliability. Users can interact with the system through well-documented APIs, facilitating smooth integration into various applications and environments.
 
 ## 2. Technologies Used
 
