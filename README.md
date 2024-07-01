@@ -110,7 +110,9 @@ This project aims to collect stock data from the Tiki-Exchange website and provi
 
         pip install -r cron_jobs/requirements.txt         
 
-### **Documentation Swagger on Docker** : http://127.0.0.1:5010/api/docs
+### **Documentation Swagger on Docker** 
+
+- **http://127.0.0.1:5010/api/docs**
 
 ## 5. Usage
 
