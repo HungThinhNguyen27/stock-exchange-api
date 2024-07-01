@@ -13,16 +13,14 @@ services:
       - "${MYSQL_PORT}:3306"
     expose:
       - 3306
-    # volumes:
-    #   - ./mysql_data:/var/lib/mysql
     networks:
       - stock-exchange-apis-networks
 
   stock-echange:
     build: 
-        context: ../stock-exchange-api
+        context: ../stock-exchange-api/src
         dockerfile: Dockerfile
-    container_name: stock-exchange
+    container_name: stock-exchange-container
     restart: unless-stopped 
     environment:
       - MYSQL_PORT=3306
@@ -31,8 +29,22 @@ services:
       - REDIS_HOST=redis
     ports:
       - ${STOCK_EXCHANGE_PORT}:5000
-    # volumes:
-    #     - ./data_file:/app/data
+    networks:
+      - stock-exchange-apis-networks
+  
+  cron_jobs: 
+    build:
+      context: ../stock-exchange-api/cron_jobs
+      dockerfile: Dockerfile
+    container_name: cron-jobs-container
+    restart: always 
+    environment:
+      - MYSQL_PORT=3306
+      - MYSQL_HOST=mysql
+    volumes:
+      - ../stock-exchange-api/cron_jobs/utils/:/cron_jobs/utils/
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
     networks:
       - stock-exchange-apis-networks
 
@@ -52,7 +64,7 @@ networks:
 
 
 
-# docker-compose --env-file config.yaml up --detach
+# docker-compose --env-file src/config.yaml up --detach
 # docker-compose stop stock-echange
 # docker-compose build stock-echange
 # docker-compose up -d stock-echange

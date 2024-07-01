@@ -1,0 +1,20 @@
+2024-07-01 14:04:01,977 - INFO - Record: No data crawled
+2024-07-01 14:04:30,747 - INFO - Record: No data crawled
+2024-07-01 14:04:35,464 - INFO - Record: No data crawled
+2024-07-01 14:04:39,472 - INFO - Record: No data crawled
+2024-07-01 14:04:42,421 - INFO - Record: No data crawled
+2024-07-01 14:04:45,907 - INFO - Record: No data crawled
+2024-07-01 14:04:51,169 - INFO - Record: No data crawled
+2024-07-01 14:04:54,386 - INFO - Record: No data crawled
+2024-07-01 16:25:48,831 - INFO - Record: No data crawled
+2024-07-01 16:26:50,358 - INFO - Record: No data crawled
+2024-07-01 16:27:51,691 - INFO - Record: No data crawled
+2024-07-01 16:28:53,044 - INFO - Record: No data crawled
+2024-07-01 16:46:54,465 - INFO - Record: {'time_stamp': '2024-07-01 16:42', 'open_price': 37, 'close_price': 37, 'high_price': 37, 'low_price': 37, 'volume': 0}
+2024-07-01 16:46:54,478 - INFO - Record: {'time_stamp': '2024-07-01 16:43', 'open_price': 37, 'close_price': 37, 'high_price': 37, 'low_price': 37, 'volume': 0}
+2024-07-01 16:46:54,487 - INFO - Record: {'time_stamp': '2024-07-01 16:44', 'open_price': 37, 'close_price': 37, 'high_price': 37, 'low_price': 37, 'volume': 0}
+2024-07-01 16:46:54,498 - INFO - Record: {'time_stamp': '2024-07-01 16:45', 'open_price': 37, 'close_price': 37, 'high_price': 37, 'low_price': 37, 'volume': 0}
+2024-07-01 16:47:54,815 - INFO - Record: {'time_stamp': '2024-07-01 16:46', 'open_price': 37, 'close_price': 37, 'high_price': 37, 'low_price': 37, 'volume': 0}
+2024-07-01 16:48:55,183 - INFO - Record: {'time_stamp': '2024-07-01 16:47', 'open_price': 37, 'close_price': 37, 'high_price': 37, 'low_price': 37, 'volume': 0}
+2024-07-01 16:49:55,512 - INFO - Record: {'time_stamp': '2024-07-01 16:48', 'open_price': 37, 'close_price': 37, 'high_price': 37, 'low_price': 37, 'volume': 0}
+2024-07-01 16:50:55,878 - INFO - Record: {'time_stamp': '2024-07-01 16:49', 'open_price': 37, 'close_price': 37, 'high_price': 37, 'low_price': 37, 'volume': 0}
