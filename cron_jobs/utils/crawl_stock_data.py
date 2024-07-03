@@ -28,13 +28,12 @@ class CrawlData:
         latest_date = self.latest_stock_record()
         start_date = latest_date + timedelta(minutes=1)
         start_timestamp = int(start_date.timestamp())
-        print(["current_date", current_date,
-               "start_date", start_date,
-               "latest_date", latest_date])
 
+        print("start_date", start_date)
 
-        # start_date = datetime(2023, 5, 1, tzinfo=timezone.utc)
-        # start_timestamp = int(start_date.timestamp())
+        # start_date = datetime(2024, 5, 1, 0, 0, 0)
+        # start_date_vietnam = vietnam_tz.localize(start_date)
+        # start_timestamp = int(start_date_vietnam.timestamp())
 
         url = "https://api.tiki.vn/rally/markets/asaxu/klines"
 

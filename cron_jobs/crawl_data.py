@@ -38,7 +38,6 @@ def crawl_stock_price_data():
         print(f"Error during crawl: {e}")
 
 schedule.every(1).minutes.do(crawl_stock_price_data)
-
 if __name__ == '__main__':
     while True:
         try:
