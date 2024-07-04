@@ -62,18 +62,18 @@ class StockUtils:
         return stock_data
 
     def format_data(self, records):
-        stock_data = []
-        for record in records:
-            stock_dict = {
-                "time_stamp": record.first_time_stamp.strftime("%Y-%m-%d %H:%M:%S"),
-                "open_price": record.first_open_price,
-                "close_price": record.last_close_price,
-                "high_price": record.high_price,
-                "low_price": record.low_price,
-                "volume": int(record.volume)
-            }
-            stock_data.append(stock_dict)
-        return stock_data
+            stock_data = []
+            for record in records:
+                stock_dict = {
+                    "time_stamp": record.trade_date.strftime("%Y-%m-%d %H:%M:%S"),
+                    "open_price": record.open_price,
+                    "close_price": record.close_price,
+                    "high_price": record.high_price,
+                    "low_price": record.low_price,
+                    "volume": int(record.volume)
+                }
+                stock_data.append(stock_dict)
+            return stock_data
 
     def download_file(self, type_file, file_data, interval):
 

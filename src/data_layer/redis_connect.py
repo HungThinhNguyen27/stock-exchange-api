@@ -11,7 +11,7 @@ REDIS_HOST = Config.REDIS_HOST
 class RedisConnect:
     def __init__(self):
         try:
-            self.redis_cache = redis.Redis(host="redis", port=6379, db=0)
+            self.redis_cache = redis.Redis(host=REDIS_HOST, port=REDIS_PORT, db=0)
             self.redis_cache.ping()
         except redis.exceptions.ConnectionError as e:
             error_message = f"Redis connection error occurred: {str(e)}"

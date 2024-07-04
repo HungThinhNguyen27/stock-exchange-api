@@ -21,7 +21,7 @@ host = "mysql"
 class MySqlConnect:
     def __init__(self):
         self.engine = create_engine(
-            f"mysql+mysqlconnector://{MYSQL_USER}:{MYSQL_PASSWORD}@{host}:{port}/{MYSQL_DB}",
+            f"mysql+mysqlconnector://{MYSQL_USER}:{MYSQL_PASSWORD}@{MYSQL_HOST}:{MYSQL_PORT}/{MYSQL_DB}",
             echo=False,
             isolation_level="READ COMMITTED"
         )
@@ -35,4 +35,5 @@ class MySqlConnect:
             send_error_to_slack(error_message)
             raise  # Re-raise the exception after sending to Slack
 
-# export PYTHONPATH=$PYTHONPATH:/Users/macos/Downloads/WORKSPACE/stock_project/data_layer
+# export PYTHONPATH=$PYTHONPATH:/Users/lap01743/Desktop/WorkSpace/stock-exchange-api/src/data_layer
+# export PYTHONPATH=$PYTHONPATH:/Users/lap01743/Desktop/WorkSpace/stock-exchange-api/src/model

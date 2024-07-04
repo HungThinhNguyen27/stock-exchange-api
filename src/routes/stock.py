@@ -29,13 +29,13 @@ class Stock:
         request_args = request.args
         resonponse, status_code = self.stock_controllers.dowload_stock_info(request_args
                                                                             )
-        return resonponse, status_code
+        return jsonify(resonponse), status_code
 
     def get_stock_info(self):
         request_args = request.args
         resonponse, status_code = self.stock_controllers.get_stock_price_by_period(request_args
                                                                                    )
-        return resonponse, status_code
+        return jsonify(resonponse), status_code
 
     def get_book_orders(self):
         taker_type = str(request.args.get("taker_type"))
