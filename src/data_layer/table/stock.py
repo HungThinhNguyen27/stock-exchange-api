@@ -43,110 +43,47 @@ class StockPriceDL(MySqlConnect):
 
         return [ts[0] for ts in limited_time_stamps]
 
-    def get_by_period_and_limit(self, period, limit, page):
-        partition = self.calculate_partition(period, limit, page)
+    def get_by_period_and_limit(self, period, limit, page): 
+        if period >= 1440: 
+            str = "DAY"
+            time = (period // 1440) * limit
+        else: 
+            str = "HOUR"
+            time = 1 if period < 60 else (period // 60) * limit 
+            
         sql = f"""
-        WITH limited_data AS (
-            SELECT 
-                time_stamp, 
-                open_price, 
-                close_price, 
-                high_price, 
-                low_price, 
-                volume,
-                FLOOR(UNIX_TIMESTAMP(time_stamp) / (:period * 60)) AS period,
-                FIRST_VALUE(open_price) OVER (PARTITION BY FLOOR(UNIX_TIMESTAMP(time_stamp) / (:period * 60)) ORDER BY time_stamp ASC) AS first_open_price,
-                LAST_VALUE(close_price) OVER (PARTITION BY FLOOR(UNIX_TIMESTAMP(time_stamp) / (:period * 60)) ORDER BY time_stamp ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) AS last_close_price
-            FROM 
-                (
+                WITH ranked_data AS (
+                    SELECT 
+                        *,
+                        ROW_NUMBER() OVER (PARTITION BY trade_date ORDER BY time_stamp ASC) AS rn_asc,
+                        ROW_NUMBER() OVER (PARTITION BY trade_date ORDER BY time_stamp DESC) AS rn_desc
+                    FROM (
+                        SELECT 
+                            FROM_UNIXTIME(FLOOR(UNIX_TIMESTAMP(time_stamp) / ({period}* 60)) * ({period} * 60)) AS trade_date,
+                            open_price,
+                            close_price,
+                            high_price,
+                            low_price,
+                            volume,
+                            time_stamp
+                        FROM StockData.stock_price_new
+                        WHERE time_stamp >= (SELECT MAX(time_stamp) - INTERVAL {time} {str} FROM StockData.stock_price_new) 
+
+                    ) AS subquery
+                )
                 SELECT
-                    *
-                FROM
-                    StockData.stock_price_new PARTITION ({partition})
-                ORDER BY
-                    time_stamp desc
-                LIMIT :limit OFFSET :offset
-            ) AS subquery
-        ),
-        period_data AS (
-            SELECT
-                time_stamp,
-                open_price,
-                close_price,
-                high_price,
-                low_price,
-                volume,
-                period,
-                first_open_price,
-                last_close_price,
-                COUNT(*) OVER (PARTITION BY period) AS row_count
-            FROM limited_data
-        )
-        SELECT
-            MIN(time_stamp) AS first_time_stamp,
-            first_open_price,
-            last_close_price,
-            MIN(low_price) AS low_price,
-            MAX(high_price) AS high_price,
-            SUM(volume) AS volume
-        FROM period_data
-        WHERE row_count = :period
-        GROUP BY period, first_open_price, last_close_price
-        ORDER BY first_time_stamp DESC
-        LIMIT {limit}
+                    trade_date,
+                    MAX(CASE WHEN rn_desc = 1 THEN close_price END) AS close_price,
+                    MAX(CASE WHEN rn_asc = 1 THEN open_price END) AS open_price,
+                    MAX(high_price) AS high_price,
+                    MIN(low_price) AS low_price,
+                    SUM(volume) AS volume
+                FROM ranked_data
+                GROUP BY trade_date
+                ORDER BY trade_date DESC 
+                limit {limit}
         """
         query = text(sql)
-        parameters = {
-            'period': period,
-            'limit': period * (limit + 1),
-            'offset': (period * limit) * (page - 1),
-        }
-        return self.session.execute(query, parameters).fetchall()
-
-
-    def calculate_partition(self, period, limit, page): 
-        query = text("SELECT count(id) FROM stock_price_new PARTITION (p2024)")
-        count_query = self.session.execute(query).scalar()
-
-        current_offset = (page - 1) * period * limit
-
-        # Determine which partition(s) to use
-        if current_offset + (period * limit) <= count_query: 
-            return 'p2024'
-        elif current_offset > count_query:
-            return 'p2023'
-        else:
-            return 'p2023, p2024'
-
-
-# a = StockPriceDL()
-# b = a.get_by_period_and_limit(1440, 10,1)
-
-
-# def format_data(records):
-#         stock_data = []
-#         for record in records:
-#             stock_dict = {
-#                 "time_stamp": record.first_time_stamp.strftime("%Y-%m-%d %H:%M:%S"),
-#                 "open_price": record.first_open_price,
-#                 "close_price": record.last_close_price,
-#                 "high_price": record.high_price,
-#                 "low_price": record.low_price,
-#                 "volume": int(record.volume)
-#             }
-#             stock_data.append(stock_dict)
-#         return stock_data
-
-# format = format_data(b)
-# for i in format:
-#     print(i)
-
-
-# # print(count_query)
-# format = format_data(count_query)
-
-# # for i in format:
-# #     print(i)
-# print(format)
+        return self.session.execute(query).fetchall()
 
 

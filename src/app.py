@@ -22,8 +22,8 @@ def handle_error(e):
     send_error_to_slack(e)
 
 if __name__ == '__main__':
-    # app.run(host='0.0.0.0', port=5001, debug=False)
-    app.run(host='0.0.0.0', debug=True, use_reloader=True) #docker 
+    app.run(host='0.0.0.0', port=5001, debug=False, use_reloader=True)
+    # app.run(host='0.0.0.0', debug=True, use_reloader=True) #docker 
 
 
 
