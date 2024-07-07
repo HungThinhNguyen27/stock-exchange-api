@@ -17,3 +17,7 @@ class Config(object):
     REDIS_PORT = config['REDIS_PORT']
     REDIS_HOST = config['REDIS_HOST']
     SLACK_TOKEN = config['SLACK_TOKEN']
+
+    TELEGRAM_TOKEN = config['TELEGRAM_TOKEN']
+    CHAT_ID_TELEGRAM = config['CHAT_ID_TELEGRAM']
+    

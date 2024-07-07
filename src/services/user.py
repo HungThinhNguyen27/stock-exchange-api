@@ -1,10 +1,10 @@
-from data_layer.table.user import UserData
+from src.data_layer.table.user import UserData
 
-from data_layer.exchange import Exchange
+from src.data_layer.exchange import Exchange
 
 
-from model.users import User
-from utils.account import Account
+from src.model.users import User
+from src.utils.account import Account
 from datetime import datetime, timedelta
 from decimal import Decimal
 

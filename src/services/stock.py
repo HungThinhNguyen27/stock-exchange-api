@@ -1,13 +1,13 @@
 
-from data_layer.table.stock import StockPriceDL
-from data_layer.table.book_orders import BookOrdersDL
-from data_layer.table.market_trans import MarketTransactionDL
-from data_layer.table.user import UserData
+from src.data_layer.table.stock import StockPriceDL
+from src.data_layer.table.book_orders import BookOrdersDL
+from src.data_layer.table.market_trans import MarketTransactionDL
+from src.data_layer.table.user import UserData
 from flask import request
-from utils.stock_utils import StockUtils
+from src.utils.stock_utils import StockUtils
 from typing import List, Tuple
-from model.stock import BookOrders, StockPrice
-from data_layer.redis_connect import RedisConnect
+from src.model.stock import BookOrders, StockPrice
+from src.data_layer.redis_connect import RedisConnect
 import json
 
 

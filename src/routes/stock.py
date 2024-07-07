@@ -1,6 +1,6 @@
 from flask import Blueprint, jsonify, request, send_from_directory, send_file
-from controllers.stock import StockControllers
-from data_layer.redis_connect import RedisConnect
+from src.controllers.stock import StockControllers
+from src.data_layer.redis_connect import RedisConnect
 import json
 
 

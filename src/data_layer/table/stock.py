@@ -1,25 +1,24 @@
 
-from sqlalchemy import func, select, alias, column
-from model.stock import StockPrice
+from sqlalchemy import func
 from typing import List
-from data_layer.mysql_connect import MySqlConnect
-from sqlalchemy import func, cast, Integer, desc, Date, and_, text
-from sqlalchemy.sql import case
-import json
-from sqlalchemy.sql.expression import literal
-import pandas as pd
-from datetime import timedelta
-from sqlalchemy.sql import extract
-from sqlalchemy import select, func
-from sqlalchemy.orm import aliased
-from functools import lru_cache
-
+from src.data_layer.mysql_connect import MySqlConnect
+from sqlalchemy import func, desc, text
+from src.model.stock import StockPrice
 
 class StockPriceDL(MySqlConnect):
 
-    def add(self, record) -> None:
-        self.session.add(record)
+    def add(self, time_stamp, open_price, close_price, high_price, low_price, volume):
+        stock_price = StockPrice(
+                    time_stamp=time_stamp,
+                    open_price=open_price,
+                    close_price=close_price,
+                    high_price=high_price,
+                    low_price=low_price,
+                    volume=volume
+                )
+        self.session.add(stock_price)
         self.session.commit()
+
 
     def commit(self) -> None:
         self.session.commit()
@@ -28,9 +27,8 @@ class StockPriceDL(MySqlConnect):
         return self.session.query(StockPrice).all()
 
     def get_one_latest_record(self):
-        latest_record = self.session.query(StockPrice.time_stamp).order_by(
+        return self.session.query(StockPrice.time_stamp).order_by(
             desc(StockPrice.time_stamp)).first()
-        return latest_record
 
     def calculate_count(self, period):  # đẩy lên service
         count_query = self.session.query(func.count(StockPrice.id)).scalar()
@@ -40,12 +38,10 @@ class StockPriceDL(MySqlConnect):
     def get_limited_time_stamps_by_period(self, period, limit, page):
         limited_time_stamps = self.session.query(StockPrice.time_stamp).order_by(
             StockPrice.time_stamp.desc()).limit(period*limit).offset((period*limit)*(page-1))
-
         return [ts[0] for ts in limited_time_stamps]
 
     def get_by_period_and_limit(self, period, limit, page): 
 
-        
         """
         - Noted : 1 period corresponds to 1 minute
         The function first calculates whether the period the user wants to query is hours or days 

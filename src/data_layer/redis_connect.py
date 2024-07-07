@@ -1,6 +1,6 @@
 import redis
-from config import Config
-from utils.slack_bot import send_error_to_slack
+from src.config import Config
+from src.utils.telegram_bot import send_error_to_telegram
 
 REDIS_PORT = Config.REDIS_PORT
 REDIS_HOST = Config.REDIS_HOST
@@ -15,7 +15,7 @@ class RedisConnect:
             self.redis_cache.ping()
         except redis.exceptions.ConnectionError as e:
             error_message = f"Redis connection error occurred: {str(e)}"
-            send_error_to_slack(error_message)
+            send_error_to_telegram(error_message)
             raise 
     
 

@@ -1,5 +1,5 @@
-from model.users import User
-from data_layer.mysql_connect import MySqlConnect
+from src.model.users import User
+from src.data_layer.mysql_connect import MySqlConnect
 from decimal import Decimal
 
 

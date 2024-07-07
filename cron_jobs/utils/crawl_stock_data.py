@@ -2,7 +2,9 @@
 from datetime import datetime, timezone, timedelta
 import requests
 import pytz
-from data_layer.stock import StockPriceDL
+from src.data_layer.table.stock import StockPriceDL
+from src.utils.telegram_bot import send_error_to_telegram
+import traceback
 
 
 class CrawlData:
@@ -12,6 +14,15 @@ class CrawlData:
     def latest_stock_record(self):
         record = self.StockPriceDL.get_one_latest_record()
         return record.time_stamp
+    
+    def add_record_to_database(self, time_stamp, open_price, close_price, high_price, low_price, volume): 
+        
+        self.StockPriceDL.add(time_stamp, 
+                              open_price, 
+                              close_price, 
+                              high_price, 
+                              low_price, 
+                              volume)
 
     def api_constant(self):
 
@@ -72,26 +83,33 @@ class CrawlData:
         return data_list
 
     def crawl_stock_price(self):
-        data_list = []
-        base_url, params_list, headers = self.api_constant()
-        response = requests.get(base_url, params=params_list,
-                                headers=headers)
-        full_url = f"{base_url}?{params_list}"
-        if response.status_code == 200:
-            print("request success !!")
-            data = response.json()
-            data_list.extend(data)
-        else: 
-            print("failed request !!")
-        formatted_data = [
-            {
-                'time_stamp': record[0],
-                'open_price': record[1],
-                'close_price': record[4],
-                'high_price': record[2],
-                'low_price': record[3],
-                'volume': record[5],
-            }
-            for record in data_list
-        ]
+        formatted_data = []  
+        try: 
+            data_list = []
+            base_url, params_list, headers = self.api_constant()
+            response = requests.get(base_url, params=params_list,
+                                    headers=headers)
+
+            if response.status_code == 200:
+                data = response.json()
+                data_list.extend(data)
+            else: 
+                text = " Sending request to tiki exchange failed!"
+                print(text)
+                send_error_to_telegram(str(text))
+            formatted_data = [
+                {
+                    'time_stamp': record[0],
+                    'open_price': record[1],
+                    'close_price': record[4],
+                    'high_price': record[2],
+                    'low_price': record[3],
+                    'volume': record[5]
+                }
+                for record in data_list
+            ]
+        except Exception as e:
+            error_message = f"Error during crawl in utils folder: {e}\n\nTraceback:\n{traceback.format_exc()}"
+            print(error_message)            
+            send_error_to_telegram(str(e))
         return self.convert_timestamp_to_vietnam(formatted_data)

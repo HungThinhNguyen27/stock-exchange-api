@@ -1,11 +1,11 @@
 from flask import Flask, jsonify, request
 import traceback
-from routes.stock import Stock
-from routes.user import UserRoutes
-from config import Config
+from src.routes.stock import Stock
+from src.routes.user import UserRoutes
+from src.config import Config
 from flask_jwt_extended import JWTManager
-from static.config import swaggerui_blueprint, SWAGGER_URL
-from utils.slack_bot import send_error_to_slack
+from src.static.config import swaggerui_blueprint, SWAGGER_URL
+from src.utils.telegram_bot import send_error_to_telegram
 
 app = Flask(__name__)
 app.config.from_object(Config)
@@ -19,7 +19,7 @@ app.register_blueprint(swaggerui_blueprint, url_prefix=SWAGGER_URL)
 
 @app.errorhandler(Exception)
 def handle_error(e):
-    send_error_to_slack(e)
+    send_error_to_telegram(e)
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5001, debug=False, use_reloader=True)
