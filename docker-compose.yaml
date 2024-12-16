@@ -34,15 +34,20 @@ services:
   
   cron_jobs: 
     build:
-      context: ../stock-exchange-api/cron_jobs
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: cron_jobs/Dockerfile
     container_name: cron-jobs-container
     restart: always 
     environment:
       - MYSQL_PORT=3306
       - MYSQL_HOST=mysql
+      - PYTHONPATH=/stock-exchange-api/src
+      - PYTHONPATH=/stock-exchange-api/src/config.py
+      - PYTHONPATH=/stock-exchange-api/src/config.yaml
+      - PYTHONPATH=/stock-exchange-api/
+    
     volumes:
-      - ../stock-exchange-api/cron_jobs/utils/:/cron_jobs/utils/
+      - ../stock-exchange-api/cron_jobs/utils/:/stock-exchange-api/cron_jobs/utils
       - /etc/localtime:/etc/localtime:ro
       - /etc/timezone:/etc/timezone:ro
     networks:

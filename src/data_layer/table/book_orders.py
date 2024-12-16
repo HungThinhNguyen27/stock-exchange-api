@@ -1,7 +1,7 @@
 
-from model.stock import BookOrders
+from src.model.stock import BookOrders
 from typing import List
-from data_layer.mysql_connect import MySqlConnect
+from src.data_layer.mysql_connect import MySqlConnect
 from sqlalchemy import asc, func, distinct, and_, desc
 from datetime import datetime
 
@@ -191,7 +191,3 @@ class BookOrdersDL(MySqlConnect):
 
         self.session.commit()
 
-
-# a = BookOrdersDL()
-# b = a.get_earliest_user_id_and_asa_by_price(20, [1], 'buy')
-# print(b)

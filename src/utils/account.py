@@ -1,7 +1,7 @@
 import hashlib
-from model.users import User
+from src.model.users import User
 import jwt
-from config import Config
+from src.config import Config
 
 
 class Account:

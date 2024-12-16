@@ -1,5 +1,5 @@
-from data_layer.mysql_connect import MySqlConnect
-from model.stock import MarketTransaction
+from src.data_layer.mysql_connect import MySqlConnect
+from src.model.stock import MarketTransaction
 from typing import List
 from sqlalchemy import asc, func
 from datetime import datetime

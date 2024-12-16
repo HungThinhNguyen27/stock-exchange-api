@@ -5,7 +5,7 @@ import json
 import certifi
 import ssl
 import traceback
-from config import Config
+from src.config import Config
 
 ssl_context = ssl.create_default_context(cafile=certifi.where())
 

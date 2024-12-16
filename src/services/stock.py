@@ -1,13 +1,13 @@
 
-from data_layer.table.stock import StockPriceDL
-from data_layer.table.book_orders import BookOrdersDL
-from data_layer.table.market_trans import MarketTransactionDL
-from data_layer.table.user import UserData
+from src.data_layer.table.stock import StockPriceDL
+from src.data_layer.table.book_orders import BookOrdersDL
+from src.data_layer.table.market_trans import MarketTransactionDL
+from src.data_layer.table.user import UserData
 from flask import request
-from utils.stock_utils import StockUtils
+from src.utils.stock_utils import StockUtils
 from typing import List, Tuple
-from model.stock import BookOrders, StockPrice
-from data_layer.redis_connect import RedisConnect
+from src.model.stock import BookOrders, StockPrice
+from src.data_layer.redis_connect import RedisConnect
 import json
 
 
@@ -49,11 +49,11 @@ class StockService:
             - page (int): Page number.
             - limit (int): Number of items per page.
         """
-        cache_key = f"stock_data:{period}:{page}:{limit}"
-        cached_data = self.redis_connect.get_from_cache(cache_key)
-        time_to_live = period*60
-        if cached_data:
-            return json.loads(cached_data)
+        # cache_key = f"stock_data:{period}:{page}:{limit}"
+        # cached_data = self.redis_connect.get_from_cache(cache_key)
+        # time_to_live = period*60
+        # if cached_data:
+        #     return json.loads(cached_data)
             
         stock_list = self.stock_data_layers.get_by_period_and_limit(period,
                                                                     limit,
@@ -68,9 +68,9 @@ class StockService:
         }
         result = {"stock_candles": self.stock_utils.format_data(stock_list),
                     "metadata": metadata}
-        self.redis_connect.add_to_cache(cache_key,
-                                        json.dumps(result),
-                                        2)
+        # self.redis_connect.add_to_cache(cache_key,
+        #                                 json.dumps(result),
+        #                                 2)
 
         return result
 

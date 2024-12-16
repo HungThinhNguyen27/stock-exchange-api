@@ -1,6 +1,6 @@
 from flask import Flask, Blueprint, jsonify, request
-from controllers.user import UserControllers
-from middlewares.authentication import JwtAuthentication
+from src.controllers.user import UserControllers
+from src.middlewares.authentication import JwtAuthentication
 from flask_jwt_extended import jwt_required, get_jwt_identity
 
 

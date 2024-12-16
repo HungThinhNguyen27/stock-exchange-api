@@ -39,9 +39,8 @@ class StockControllers:
                                                                 limit)
         if page > result["metadata"]["total_pages"]:
             return {"message": "Page {} does not exist".format(page)}, 404
-        status_code = 200
 
-        return result, status_code
+        return result, 200
 
     def get_book_orders_by_taker_type(self, page, limit, taker_type):
 
